@@ -37,8 +37,19 @@ namespace Solution.RuralWater.AZF.Functions
 
             var queryDictionary = QueryHelpers.ParseQuery(req.Url.Query);
 
-            string accountId = queryDictionary["accountId"];
-            string tz = queryDictionary["tz"];
+            string accountId = "";
+            if (queryDictionary.TryGetValue("accountId", out var id))
+            {
+                if (String.IsNullOrEmpty(id))
+                {
+                    return new BadRequestObjectResult($"Query parameter 'accountId' must not be null or empty.");
+                }
+                accountId = id;
+            } else {
+                return new BadRequestObjectResult($"Query parameter 'accountId' is required.");
+            }
+
+            queryDictionary.TryGetValue("tz", out var tz);
 
             var authenticationHelper = new AuthenticationHelper(logger);
             var result = await authenticationHelper.GetAccessToken(password);
