@@ -29,7 +29,7 @@ namespace Solution.RuralWater.AZF.Models.Flow
         public string Series { get; set; }
 
         [JsonProperty("ratemlday")]
-        public string RateMlDay { get; set; }
+        public double RateMlDay { get; set; }
 
         [JsonProperty("unit")]
         public string Unit { get; set; }
