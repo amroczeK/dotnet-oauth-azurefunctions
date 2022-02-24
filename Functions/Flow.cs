@@ -41,7 +41,7 @@ namespace Solution.RuralWater.AZF.Functions
             string tz = queryDictionary["tz"];
 
             var authenticationHelper = new AuthenticationHelper(logger);
-            var result = await authenticationHelper.GetAccessToken();
+            var result = await authenticationHelper.GetAccessToken(password);
 
             if (!string.IsNullOrEmpty(accountId))
             {

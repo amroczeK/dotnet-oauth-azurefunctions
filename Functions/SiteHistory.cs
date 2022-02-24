@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Solution.RuralWater.AZF;
 using Solution.RuralWater.AZF.Helpers;
@@ -24,6 +25,9 @@ namespace RuralWater
         {
             var logger = executionContext.GetLogger("Raw");
 
+            var config = new ConfigurationBuilder().AddEnvironmentVariables().Build();
+            var password = config["Password"];
+
             AuthorizationHelper authorizationHelper = new AuthorizationHelper(logger);
             var validate = authorizationHelper.ValidateApiKey(req.Headers);
 
@@ -38,7 +42,7 @@ namespace RuralWater
             string tz = queryDictionary["tz"];
 
             var authenticationHelper = new AuthenticationHelper(logger);
-            var result = await authenticationHelper.GetAccessToken();
+            var result = await authenticationHelper.GetAccessToken(password);
 
             if (!string.IsNullOrEmpty(accountId))
             {
@@ -90,6 +94,9 @@ namespace RuralWater
         {
             var logger = executionContext.GetLogger("Raw");
 
+            var config = new ConfigurationBuilder().AddEnvironmentVariables().Build();
+            var password = config["Password"];
+
             AuthorizationHelper authorizationHelper = new AuthorizationHelper(logger);
             var validate = authorizationHelper.ValidateApiKey(req.Headers);
 
@@ -104,7 +111,7 @@ namespace RuralWater
             string tz = queryDictionary["tz"];
 
             var authenticationHelper = new AuthenticationHelper(logger);
-            var result = await authenticationHelper.GetAccessToken();
+            var result = await authenticationHelper.GetAccessToken(password);
 
             if (!string.IsNullOrEmpty(accountId))
             {

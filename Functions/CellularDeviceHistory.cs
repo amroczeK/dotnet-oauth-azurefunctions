@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Solution.RuralWater.AZF.Helpers;
 using Solution.RuralWater.AZF.Models.CellularDeviceHistory;
@@ -23,6 +24,9 @@ namespace Solution.RuralWater.AZF.Functions
         {
             var logger = executionContext.GetLogger("Rdmw");
 
+            var config = new ConfigurationBuilder().AddEnvironmentVariables().Build();
+            var password = config["Password"];
+
             AuthorizationHelper authorizationHelper = new AuthorizationHelper(logger);
             var validate = authorizationHelper.ValidateApiKey(req.Headers);
 
@@ -37,7 +41,7 @@ namespace Solution.RuralWater.AZF.Functions
             string tz = queryDictionary["tz"];
 
             var authenticationHelper = new AuthenticationHelper(logger);
-            var result = await authenticationHelper.GetAccessToken();
+            var result = await authenticationHelper.GetAccessToken(password);
 
             if (!string.IsNullOrEmpty(accountId))
             {

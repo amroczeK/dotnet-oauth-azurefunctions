@@ -10,7 +10,7 @@ namespace Solution.RuralWater.AZF.Helpers
 
     public interface IAuthenticationHelper
     {
-        Task<TokenResponse> GetAccessToken();
+        Task<TokenResponse> GetAccessToken(string password);
         //Task GetAzureFunctionKey();
     }
 
@@ -25,7 +25,7 @@ namespace Solution.RuralWater.AZF.Helpers
             _logger = logger;
         }
 
-        public async Task<TokenResponse> GetAccessToken()
+        public async Task<TokenResponse> GetAccessToken(string password)
         {
             var authorityUri = $"https://login.microsoftonline.com/{Constants.TenantId}/oauth2/v2.0/token";
             string[] scopes = new string[] { Constants.Scope };
@@ -47,7 +47,7 @@ namespace Solution.RuralWater.AZF.Helpers
                 try
                 {
                     var securePassword = new SecureString();
-                    foreach (char c in Constants.Password)        // you should fetch the password
+                    foreach (char c in password)        // you should fetch the password
                         securePassword.AppendChar(c);  // keystroke by keystroke
 
                     result = await app.AcquireTokenByUsernamePassword(scopes, Constants.Username, securePassword)
