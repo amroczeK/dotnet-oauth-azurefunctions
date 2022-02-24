@@ -47,7 +47,7 @@ namespace RuralWater
                     logger.LogInformation($"Querying {Constants.GraphQlUrl}");
 
                     var client = new GraphQLHttpClient(Constants.GraphQlUrl, new NewtonsoftJsonSerializer());
-                    client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Constants.AuthorizationHeader, Constants.BearerToken);
+                    client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Constants.AuthorizationHeader, result.AccessToken);
                     client.HttpClient.DefaultRequestHeaders.Add("Origin", Constants.Origin);
 
                     var request = new GraphQLRequest
@@ -113,7 +113,7 @@ namespace RuralWater
                     logger.LogInformation($"Querying {Constants.GraphQlUrl}");
 
                     var client = new GraphQLHttpClient(Constants.GraphQlUrl, new NewtonsoftJsonSerializer());
-                    client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Constants.AuthorizationHeader, Constants.BearerToken);
+                    client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Constants.AuthorizationHeader, result.AccessToken);
                     client.HttpClient.DefaultRequestHeaders.Add("Origin", Constants.Origin);
 
                     var request = new GraphQLRequest

@@ -27,14 +27,10 @@ namespace Solution.RuralWater.AZF.Helpers
 
         public async Task<TokenResponse> GetAccessToken()
         {
-            var clientId = "359c10ed-2372-4cae-9134-2ad5ba5129e9";
-            var tenantId = "16bca4e9-5156-4674-821a-a7f501ab4d73";
-            var username = "solution.admin@dataexchange.work";
-            var password = "Fuyo2820";
-            var authorityUri = $"https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token";
-            string[] scopes = new string[] { "User.Read" };
+            var authorityUri = $"https://login.microsoftonline.com/{Constants.TenantId}/oauth2/v2.0/token";
+            string[] scopes = new string[] { Constants.Scope };
 
-            var app = PublicClientApplicationBuilder.Create(clientId)
+            var app = PublicClientApplicationBuilder.Create(Constants.ClientId)
                         .WithAuthority(authorityUri)
                         .Build();
             var accounts = await app.GetAccountsAsync();
@@ -51,10 +47,10 @@ namespace Solution.RuralWater.AZF.Helpers
                 try
                 {
                     var securePassword = new SecureString();
-                    foreach (char c in password)        // you should fetch the password
+                    foreach (char c in Constants.Password)        // you should fetch the password
                         securePassword.AppendChar(c);  // keystroke by keystroke
 
-                    result = await app.AcquireTokenByUsernamePassword(scopes, username, securePassword)
+                    result = await app.AcquireTokenByUsernamePassword(scopes, Constants.Username, securePassword)
                                        .ExecuteAsync();
                 }
                 catch (MsalException ex)
