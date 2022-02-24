@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Solution.RuralWater.AZF.Models.DeviceHistory
+namespace Solution.RuralWater.AZF.Models.Flow
 {
     public class GraphQlResponse
     {
         [JsonProperty("egressData")]
-        public List<DeviceHistoryResponse> deviceHistoryResponse { get; set; } = null;
+        public List<FlowResponse> flowResponse { get; set; }
     }
 }
