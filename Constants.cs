@@ -10,8 +10,6 @@ namespace Solution.RuralWater.AZF
 
         public const string Username = "solution.admin@dataexchange.work";
 
-        public const string Password = "Fuyo2820";
-
         public const string Origin = "http://localhost:7071";
 
         public const string GraphQlUrl = "https://api-app.w04azu9905.datahub.telstra.com/graphql";
