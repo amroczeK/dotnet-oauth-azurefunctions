@@ -19,7 +19,7 @@ namespace Solution.RuralWater.AZF.Functions
     {
         [Function("GetFlowRdmw")]
         public static async Task<IActionResult> GetFlowRdmw(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "data/flow/rdmw")] HttpRequestData req,
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "data/flow/rdmw")] HttpRequestData req,
             FunctionContext executionContext)
         {
             var logger = executionContext.GetLogger("Rdmw");
