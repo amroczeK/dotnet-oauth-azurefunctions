@@ -35,7 +35,7 @@ namespace Solution.RuralWater.AZF.Helpers
                 var apiKey = output.FirstOrDefault();
                 if (!string.IsNullOrEmpty(apiKey))
                 {
-                    if (!apiKey.Equals("123456"))
+                    if (!apiKey.Equals(vaultApiKey))
                     {
                         _logger.LogError($"{InvalidApiKeyError}");
                         response.message = InvalidApiKeyError;
