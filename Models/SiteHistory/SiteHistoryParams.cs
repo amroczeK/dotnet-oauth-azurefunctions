@@ -4,7 +4,7 @@ namespace Solution.RuralWater.AZF.Models.SiteHistory
 {
     public class SiteHistoryParams
     {
-        [JsonProperty("accountId")]
+        [JsonProperty("accountId", Required = Required.Always)]
         public string AccountId { get; set; }
 
         [JsonProperty("tz")]

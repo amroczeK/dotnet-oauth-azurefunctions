@@ -1,6 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using System.Web;
+using AutoMapper;
 using GraphQL;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
@@ -10,6 +14,9 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json;
+using Solution.RuralWater.AZF.Config;
 using Solution.RuralWater.AZF.Helpers;
 using Solution.RuralWater.AZF.Models.Flow;
 
@@ -18,83 +25,94 @@ namespace Solution.RuralWater.AZF.Functions
     public class Flow
     {
         [Function("GetFlowRdmw")]
-        public static async Task<IActionResult> GetFlowRdmw(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "data/flow/rdmw")] HttpRequestData req,
+        public async Task<HttpResponseData> GetFlowRdmw(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "data/flow/rdmw")] HttpRequestData req,
             FunctionContext executionContext)
         {
             var logger = executionContext.GetLogger("Rdmw");
 
-            var config = new ConfigurationBuilder().AddEnvironmentVariables().Build();
-            var password = config["Password"];
+            var response = req.CreateResponse(HttpStatusCode.OK);
+
+            Secrets secrets = new Secrets(logger);
 
             AuthorizationHelper authorizationHelper = new AuthorizationHelper(logger);
-            var validate = authorizationHelper.ValidateApiKey(req.Headers);
+            var validate = authorizationHelper.ValidateApiKey(req.Headers, secrets.VaultApiKey);
 
             if (!validate.valid)
             {
-                return new BadRequestObjectResult(validate.message);
+                response.StatusCode = HttpStatusCode.BadRequest;
+                await response.WriteStringAsync(validate.message);
+                return response;
             }
 
             var queryDictionary = QueryHelpers.ParseQuery(req.Url.Query);
 
-            string accountId = "";
-            if (queryDictionary.TryGetValue("accountId", out var id))
-            {
-                if (String.IsNullOrEmpty(id))
-                {
-                    return new BadRequestObjectResult($"Query parameter 'accountId' must not be null or empty.");
-                }
-                accountId = id;
-            } else {
-                return new BadRequestObjectResult($"Query parameter 'accountId' is required.");
-            }
+            var queryParams = new QueryParams();
+            response = await queryParams.ValidateHeaders(response, queryDictionary);
+            if (response.StatusCode == HttpStatusCode.BadRequest) return response;
 
-            queryDictionary.TryGetValue("tz", out var tz);
+            // Fails
+            FlowParams flowParams = queryParams.ConvertDictionaryTo<FlowParams>(queryDictionary);
+            // Fails
+            //object flowParams = ConvertDictionaryTo<FlowParams>(queryDictionary);
+
+            // Fails
+            //var json = JsonConvert.SerializeObject(flowParams);
+            //var obj = JsonConvert.DeserializeObject(json);
 
             var authenticationHelper = new AuthenticationHelper(logger);
-            var result = await authenticationHelper.GetAccessToken(password);
+            var result = await authenticationHelper.GetAccessToken(secrets.Password);
 
-            if (!string.IsNullOrEmpty(accountId))
+            // Fails
+            // FlowParams test = new FlowParams{
+            //     accountId = "11",
+            //     tz = "UTC"
+            // };
+
+            // Fails
+            //object test3 = (object)test;
+
+            try
             {
-                try
+                logger.LogInformation($"Querying {Constants.GraphQlUrl}");
+
+                var client = new GraphQLHttpClient(Constants.GraphQlUrl, new NewtonsoftJsonSerializer());
+                client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Constants.AuthorizationHeader, result.AccessToken);
+                client.HttpClient.DefaultRequestHeaders.Add("Origin", Constants.Origin);
+
+                // Works
+                object parameters = new
                 {
-                    logger.LogInformation($"Querying {Constants.GraphQlUrl}");
+                    accountId = flowParams.accountId,
+                    tz = flowParams.tz
+                };
 
-                    var client = new GraphQLHttpClient(Constants.GraphQlUrl, new NewtonsoftJsonSerializer());
-                    client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Constants.AuthorizationHeader, result.AccessToken);
-                    client.HttpClient.DefaultRequestHeaders.Add("Origin", Constants.Origin);
-
-                    var request = new GraphQLRequest
+                var request = new GraphQLRequest
+                {
+                    Query = Constants.Query,
+                    Variables = new
                     {
-                        Query = Constants.Query,
-                        Variables = new
-                        {
-                            egressDataXdsName = Constants.FlowXdsName,
-                            egressDataViewName = "rdmw",
-                            egressDataVersion = "v1",
-                            egressDataIncludeTimeZone = false,
-                            egressDataParams = new
-                            {
-                                accountId,
-                                tz
-                            }
-                        }
-                    };
+                        egressDataXdsName = Constants.FlowXdsName,
+                        egressDataViewName = "rdmw",
+                        egressDataVersion = "v1",
+                        egressDataIncludeTimeZone = false,
+                        egressDataParams = parameters
+                    }
+                };
 
-                    var response = await client.SendQueryAsync<GraphQlResponse>(request);
-                    return new OkObjectResult(response.Data.flowResponse);
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError($"Error occured querying GraphQL: {ex.Message}");
-                    return new BadRequestObjectResult($"Error occurred querying GraphQL: {ex.Message}");
-                }
+                var data = await client.SendQueryAsync<GraphQlResponse>(request);
+
+                await response.WriteAsJsonAsync(data.Data.flowResponse);
+                return response;
             }
-            else
+            catch (Exception ex)
             {
-                logger.LogError("Query parameter 'accountId' not set.");
-                return new BadRequestObjectResult("Query parameter 'accountId' not set.");
+                logger.LogError($"Error occured querying GraphQL: {ex.Message}");
+                response.StatusCode = HttpStatusCode.BadRequest;
+                await response.WriteStringAsync($"Error occured querying GraphQL: {ex.Message}");
+                return response;
             }
+
         }
     }
 }

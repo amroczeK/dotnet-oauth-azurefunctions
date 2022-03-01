@@ -9,7 +9,7 @@ namespace Solution.RuralWater.AZF.Helpers
 {
     public interface IAuthorizationHelper
     {
-        AuthorizationResponse ValidateApiKey(HttpHeadersCollection headers);
+        AuthorizationResponse ValidateApiKey(HttpHeadersCollection headers, string vaultApiKey);
     }
 
     public class AuthorizationHelper : IAuthorizationHelper
@@ -25,7 +25,7 @@ namespace Solution.RuralWater.AZF.Helpers
             _logger = logger;
         }
 
-        public AuthorizationResponse ValidateApiKey(HttpHeadersCollection headers)
+        public AuthorizationResponse ValidateApiKey(HttpHeadersCollection headers, string vaultApiKey)
         {
             var response = new AuthorizationResponse();
             _logger.LogInformation("Validating ApiKey header.");

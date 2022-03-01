@@ -1,40 +1,53 @@
+using System;
+using System.Collections.Generic;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 
 namespace Solution.RuralWater.AZF.Models.Flow
 {
     public class FlowParams
     {
-        [JsonProperty("accountId")]
-        public string AccountId { get; set; }
+        [JsonProperty("accountId", Required = Required.Always)]
+        public string accountId { get; set; }
 
         [JsonProperty("tz")]
-        public string Tz { get; set; } = "UTC";
+        public string tz { get; set; } = "UTC";
 
         [JsonProperty("deviceId")]
-        public string DeviceId { get; set; }
+        public string? deviceId { get; set; }
 
         [JsonProperty("siteId")]
-        public string SiteId { get; set; }
+        public string? siteId { get; set; }
 
         [JsonProperty("ts")]
-        public string Ts { get; set; }
+        public string? ts { get; set; }
 
         [JsonProperty("time")]
-        public string Time { get; set; }
+        public string? time { get; set; }
 
         [JsonProperty("page")]
-        public string Page { get; set; }
+        public string? page { get; set; }
 
         [JsonProperty("perPage")]
-        public string PerPage { get; set; }
+        public string? perPage { get; set; }
 
         [JsonProperty("sortBy")]
-        public string SortBy { get; set; }
+        public string? sortBy { get; set; }
 
         [JsonProperty("sort")]
-        public string Sort { get; set; }
+        public string? sort { get; set; }
 
         [JsonProperty("combineWith")]
-        public string CombineWith { get; set; }
+        public string? combineWith { get; set; }
+
+        public FlowParams()
+        {
+
+        }
+
+        public FlowParams(Dictionary<string, StringValues> queryParams)
+        {
+            var json = JsonConvert.SerializeObject(queryParams, Newtonsoft.Json.Formatting.Indented);
+        }
     }
 }

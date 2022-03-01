@@ -4,34 +4,38 @@ namespace Solution.RuralWater.AZF.Models.CellularDeviceHistory
 {
     public class CellularDeviceHistoryParams
     {
-        [JsonProperty("accountId")]
-        public string AccountId { get; set; }
+        [JsonProperty("accountId", Required = Required.Always)]
+        public string accountId { get; set; }
 
         [JsonProperty("tz")]
-        public string Tz { get; set; } = "UTC";
+        public string tz { get; set; } = "UTC";
 
         [JsonProperty("deviceId")]
-        public string DeviceId { get; set; }
+        public string deviceId { get; set; }
 
         [JsonProperty("siteId")]
-        public string SiteId { get; set; }
+        public string siteId { get; set; }
 
         [JsonProperty("serialNumber")]
-        public string SerialNumber { get; set; }
+        public string serialNumber { get; set; }
 
         [JsonProperty("page")]
-        public string Page { get; set; }
+        public string page { get; set; }
 
         [JsonProperty("perPage")]
-        public string PerPage { get; set; }
+        public string perPage { get; set; }
 
         [JsonProperty("sortBy")]
-        public string SortBy { get; set; }
+        public string sortBy { get; set; }
 
         [JsonProperty("sort")]
-        public string Sort { get; set; }
+        public string sort { get; set; }
 
         [JsonProperty("combineWith")]
-        public string CombineWith { get; set; }
+        public string combineWith { get; set; }
+
+        public CellularDeviceHistoryParams(){
+            
+        }
     }
 }

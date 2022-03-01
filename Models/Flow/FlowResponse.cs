@@ -5,7 +5,7 @@ namespace Solution.RuralWater.AZF.Models.Flow
     public class FlowResponse
     {
         [JsonProperty("data_source_id")]
-        public int DataSourceId { get; set; }
+        public long DataSourceId { get; set; }
 
         [JsonProperty("device_id")]
         public string DeviceId { get; set; }
