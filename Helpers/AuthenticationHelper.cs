@@ -51,7 +51,7 @@ namespace Solution.RuralWater.AZF.Helpers
                     foreach (char c in password)        // you should fetch the password
                         securePassword.AppendChar(c);  // keystroke by keystroke
 
-                    result = await app.AcquireTokenByUsernamePassword(scopes, options.Username, securePassword)
+                    result = await app.AcquireTokenByUsernamePassword(scopes, options.AadUsername, securePassword)
                                        .ExecuteAsync();
                 }
                 catch (MsalException ex)
