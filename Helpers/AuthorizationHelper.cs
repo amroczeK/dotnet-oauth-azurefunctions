@@ -14,10 +14,11 @@ namespace Solution.RuralWater.AZF.Helpers
 
     public class AuthorizationHelper : IAuthorizationHelper
     {
-        private const string MissingApiKeyHeaderError = "ApiKey header is missing";
+        private const string MissingApiKeyHeaderError = "Authorization header is missing";
+        private const string InvalidAuthorizationHeaderError = "Authorization header is invalid";
         private const string InvalidApiKeyError = "ApiKey is invalid";
-        private const string MissingApiKeyError = "ApiKey is null or empty";
-        public const string ApiKeyHeaderName = "ApiKey";
+        public const string ApiKeyHeaderName = "Authorization";
+        private const string ApiKeyHeaderAuthorizationType = "ApiKey";
         private readonly ILogger _logger;
 
         public AuthorizationHelper(ILogger logger)
@@ -32,21 +33,18 @@ namespace Solution.RuralWater.AZF.Helpers
 
             if (headers.TryGetValues(ApiKeyHeaderName, out var output))
             {
-                var apiKey = output.FirstOrDefault();
-                if (!string.IsNullOrEmpty(apiKey))
+                string[] authHeaderParts = output.FirstOrDefault().Split(" ");
+                if (authHeaderParts.Length != 2 || authHeaderParts[0] != ApiKeyHeaderAuthorizationType)
                 {
-                    if (!apiKey.Equals(vaultApiKey))
-                    {
-                        _logger.LogError($"{InvalidApiKeyError}");
-                        response.message = InvalidApiKeyError;
-                        response.statusCode = StatusCodes.Status401Unauthorized;
-                        response.valid = false;
-                    }
+                    _logger.LogError($"{InvalidAuthorizationHeaderError}");
+                    response.message = InvalidAuthorizationHeaderError;
+                    response.statusCode = StatusCodes.Status401Unauthorized;
+                    response.valid = false;
                 }
-                else
+                else if (!authHeaderParts[1].Equals(vaultApiKey))
                 {
-                    _logger.LogError($"{MissingApiKeyError}");
-                    response.message = MissingApiKeyError;
+                    _logger.LogError($"{InvalidApiKeyError}");
+                    response.message = InvalidApiKeyError;
                     response.statusCode = StatusCodes.Status401Unauthorized;
                     response.valid = false;
                 }
