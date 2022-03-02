@@ -11,7 +11,7 @@ namespace Solution.RuralWater.AZF.Config
         public string Scope { get; set; }
         public string Origin { get; set; }
         public string GraphQlUrl { get; set; }
-        public string Username { get; set; }
+        public string AadUsername { get; set; }
 
         public Options()
         {
@@ -22,7 +22,7 @@ namespace Solution.RuralWater.AZF.Config
             Scope = config["Scope"] ?? throw new ArgumentNullException("Scope");
             Origin = config["Origin"] ?? throw new ArgumentNullException("Origin");
             GraphQlUrl = config["GraphQlUrl"] ?? throw new ArgumentNullException("GraphQlUrl");
-            Username = config["Username"] ?? throw new ArgumentNullException("Username");
+            AadUsername = config["AadUsername"] ?? throw new ArgumentNullException("Username");
         }
     }
 }
