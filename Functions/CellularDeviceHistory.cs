@@ -5,11 +5,9 @@ using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Solution.RuralWater.AZF.Config;
 using Solution.RuralWater.AZF.Helpers;
@@ -28,8 +26,24 @@ namespace Solution.RuralWater.AZF.Functions
 
             var response = req.CreateResponse(HttpStatusCode.OK);
 
-            Secrets secrets = new Secrets(logger);
+            Options options = null;
+            Secrets secrets = null;
+            try
+            {
+                // Retrieve options passed to environment vars from Azure Function configuration during runtime
+                options = new Options();
+                // Retrieve secrets passed to environment vars from Azure Key Vault during runtime
+                secrets = new Secrets();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"Error retrieving Application settings: {ex.Message}");
+                response.StatusCode = HttpStatusCode.BadRequest;
+                await response.WriteStringAsync($"Error retrieving Application settings: {ex.Message}");
+                return response;
+            }
 
+            // Validate Authorization header and ApiKey
             AuthorizationHelper authorizationHelper = new AuthorizationHelper(logger);
             var validate = authorizationHelper.ValidateApiKey(req.Headers, secrets.VaultApiKey);
 
@@ -40,30 +54,27 @@ namespace Solution.RuralWater.AZF.Functions
                 return response;
             }
 
+            // Parse query parameters
             var queryDictionary = QueryHelpers.ParseQuery(req.Url.Query);
 
+            // Validate required query parameters
             var queryParams = new QueryParams();
-            response = await queryParams.ValidateHeaders(response, queryDictionary);
+            response = await queryParams.ValidateQueryParams(response, queryDictionary);
             if (response.StatusCode == HttpStatusCode.BadRequest) return response;
 
-            CellularDeviceHistoryParams cdhp = queryParams.ConvertDictionaryTo<CellularDeviceHistoryParams>(queryDictionary);
+            // Required: Convert parameters to dynamic object because GraphQLRequest Variables expects Anonymous Type...
+            dynamic dynamicQueryParams = queryParams.DictionaryToDynamic(queryDictionary);
 
             var authenticationHelper = new AuthenticationHelper(logger);
-            var result = await authenticationHelper.GetAccessToken(secrets.Password);
+            var result = await authenticationHelper.GetAccessToken(secrets.Password, options);
 
             try
             {
-                logger.LogInformation($"Querying {Constants.GraphQlUrl}");
+                logger.LogInformation($"Querying {options.GraphQlUrl}");
 
-                var client = new GraphQLHttpClient(Constants.GraphQlUrl, new NewtonsoftJsonSerializer());
+                var client = new GraphQLHttpClient(options.GraphQlUrl, new NewtonsoftJsonSerializer());
                 client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Constants.AuthorizationHeader, result.AccessToken);
-                client.HttpClient.DefaultRequestHeaders.Add("Origin", Constants.Origin);
-
-                object parameters = new
-                {
-                    accountId = cdhp.accountId,
-                    tz = cdhp.tz
-                };
+                client.HttpClient.DefaultRequestHeaders.Add("Origin", options.Origin);
 
                 var request = new GraphQLRequest
                 {
@@ -74,11 +85,12 @@ namespace Solution.RuralWater.AZF.Functions
                         egressDataViewName = "rdmw",
                         egressDataVersion = "v1",
                         egressDataIncludeTimeZone = false,
-                        egressDataParams = parameters
+                        egressDataParams = dynamicQueryParams
                     }
                 };
 
                 var data = await client.SendQueryAsync<GraphQlResponse>(request);
+
                 await response.WriteAsJsonAsync(data.Data.cellularDeviceHistoryResponse);
                 return response;
             }

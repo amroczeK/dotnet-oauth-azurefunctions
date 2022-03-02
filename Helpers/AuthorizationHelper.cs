@@ -29,7 +29,7 @@ namespace Solution.RuralWater.AZF.Helpers
         public AuthorizationResponse ValidateApiKey(HttpHeadersCollection headers, string vaultApiKey)
         {
             var response = new AuthorizationResponse();
-            _logger.LogInformation("Validating ApiKey header.");
+            _logger.LogInformation("Validating Authorization header and ApiKey.");
 
             if (headers.TryGetValues(ApiKeyHeaderName, out var output))
             {
