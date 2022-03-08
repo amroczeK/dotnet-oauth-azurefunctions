@@ -2,7 +2,7 @@ namespace Solution.RuralWater.AZF
 {
     public class Constants
     {
-        public const string AuthorizationHeader = "Bearer";
+        public const string AuthorizationType = "Bearer";
 
         public const string CellularDeviceHistoryXdsName = "cellular-device-history";
 

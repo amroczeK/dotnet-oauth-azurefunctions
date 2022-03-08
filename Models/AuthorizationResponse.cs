@@ -9,6 +9,6 @@ namespace Solution.RuralWater.AZF.Models
 
         public int statusCode { get; set; } = StatusCodes.Status200OK;
 
-        public Boolean valid { get; set; } = true;
+        public Boolean valid { get; set; } = false;
     }
 }
