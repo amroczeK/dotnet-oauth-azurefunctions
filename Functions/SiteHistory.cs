@@ -12,7 +12,7 @@
 // using Microsoft.Extensions.Configuration;
 // using Microsoft.Extensions.Logging;
 // using Solution.RuralWater.AZF;
-// using Solution.RuralWater.AZF.Config;
+// using Solution.RuralWater.AZF.Options;
 // using Solution.RuralWater.AZF.Helpers;
 // using Solution.RuralWater.AZF.Models.SiteHistory;
 

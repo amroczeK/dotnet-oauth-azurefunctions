@@ -9,14 +9,24 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using Solution.RuralWater.AZF.Config;
+using Solution.RuralWater.AZF.Options;
 using Solution.RuralWater.AZF.Helpers;
 using Solution.RuralWater.AZF.Models.Flow;
+using Microsoft.Extensions.Options;
 
 namespace Solution.RuralWater.AZF.Functions
 {
     public class Flow
     {
+        private readonly Config _config;
+        private readonly Secrets _secrets;
+
+        public Flow(IOptions<Config> config, IOptions<Secrets> secrets){
+            _config = config.Value ?? throw new ArgumentException(nameof(config));
+            _secrets = secrets.Value ?? throw new ArgumentException(nameof(secrets));
+        }
+
+
         [Function("GetFlowRdmw")]
         public async Task<HttpResponseData> GetFlowRdmw(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "data/flow/rdmw")] HttpRequestData req,
@@ -26,26 +36,9 @@ namespace Solution.RuralWater.AZF.Functions
 
             var response = req.CreateResponse(HttpStatusCode.OK);
 
-            Options options = null;
-            Secrets secrets = null;
-            try
-            {
-                // Retrieve options passed to environment vars from Azure Function configuration during runtime
-                options = new Options();
-                // Retrieve secrets passed to environment vars from Azure Key Vault during runtime
-                secrets = new Secrets();
-            }
-            catch (Exception ex)
-            {
-                logger.LogError($"Error retrieving Application settings: {ex.Message}");
-                response.StatusCode = HttpStatusCode.BadRequest;
-                await response.WriteStringAsync($"Error retrieving Application settings: {ex.Message}");
-                return response;
-            }
-
             // Validate Authorization header and ApiKey
-            AuthorizationHelper authorizationHelper = new AuthorizationHelper(logger);
-            var validate = authorizationHelper.ValidateApiKey(req.Headers, secrets.VaultApiKey);
+            AuthorizationHelper authorizationHelper = new AuthorizationHelper(logger, _config, _secrets);
+            var validate = authorizationHelper.ValidateApiKey(req.Headers);
 
             if (!validate.valid)
             {
@@ -66,16 +59,21 @@ namespace Solution.RuralWater.AZF.Functions
             dynamic dynamicQueryParams = queryParams.DictionaryToDynamic(queryDictionary);
 
             // Get Bearer token using Password Credentials flow to be able to query GraphQL layer
-            var authenticationHelper = new AuthenticationHelper(logger);
-            var result = await authenticationHelper.GetAccessToken(secrets.Password, options);
+            var authenticationHelper = new AuthenticationHelper(logger, _config, _secrets);
+            var result = await authenticationHelper.GetAccessToken();
+
+            if(result.AccessToken == null){
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
+            }
 
             try
             {
-                logger.LogInformation($"Querying {options.GraphQlUrl}");
+                logger.LogInformation("Querying {GraphQlUrl}", _config.GraphQlUrl);
 
-                var client = new GraphQLHttpClient(options.GraphQlUrl, new NewtonsoftJsonSerializer());
-                client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Constants.AuthorizationHeader, result.AccessToken);
-                client.HttpClient.DefaultRequestHeaders.Add("Origin", options.Origin);
+                var client = new GraphQLHttpClient(_config.GraphQlUrl, new NewtonsoftJsonSerializer());
+                client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Constants.AuthorizationType, result.AccessToken);
+                client.HttpClient.DefaultRequestHeaders.Add("Origin", _config.Origin);
 
                 var request = new GraphQLRequest
                 {

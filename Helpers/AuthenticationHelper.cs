@@ -3,69 +3,71 @@ using System.Security;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client;
-using Solution.RuralWater.AZF.Config;
+using Solution.RuralWater.AZF.Options;
 using Solution.RuralWater.AZF.Models;
+using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
 
 namespace Solution.RuralWater.AZF.Helpers
 {
 
     public interface IAuthenticationHelper
     {
-        Task<TokenResponse> GetAccessToken(string password, Options options);
+        Task<TokenResponse> GetAccessToken();
         //Task GetAzureFunctionKey();
     }
 
     public class AuthenticationHelper : IAuthenticationHelper
     {
-        //private readonly IPublicClientApplication _publicClientApplication;
+        private readonly Config _config;
+        private readonly Secrets _secrets;
         private readonly ILogger _logger;
 
-        public AuthenticationHelper(ILogger logger)
+        public AuthenticationHelper(ILogger logger, Config config, Secrets secrets)
         {
-            //_publicClientApplication = publicClientApplication;
             _logger = logger;
+            _config = config;
+            _secrets = secrets;
         }
 
-        public async Task<TokenResponse> GetAccessToken(string password, Options options)
+        public async Task<TokenResponse> GetAccessToken()
         {
-            var authorityUri = $"https://login.microsoftonline.com/{options.TenantId}/oauth2/v2.0/token";
-            string[] scopes = new string[] { options.Scope };
-
-            var app = PublicClientApplicationBuilder.Create(options.ClientId)
-                        .WithAuthority(authorityUri)
+            _logger.LogInformation("Getting Access Token");
+            var response = new TokenResponse();
+            try
+            {
+                var authorityUri = $"https://login.microsoftonline.com/{_config.TenantId}/oauth2/v2.0/token";
+                string[] scopes = new string[] { _config.Scope };
+                var app = PublicClientApplicationBuilder.Create(_config.ClientId)
+                        .WithAuthority(new Uri(authorityUri))
                         .Build();
-            var accounts = await app.GetAccountsAsync();
+                var accounts = await app.GetAccountsAsync();
+                AuthenticationResult result = null;
 
-            AuthenticationResult result = null;
-            string errorMessage = "";
-            if (accounts.Any())
-            {
-                result = await app.AcquireTokenSilent(scopes, accounts.FirstOrDefault())
-                                  .ExecuteAsync();
-            }
-            else
-            {
-                try
+                if (accounts.Any())
                 {
+                    result = await app.AcquireTokenSilent(scopes, accounts.FirstOrDefault())
+                                      .ExecuteAsync();
+                }
+                else
+                {
+
                     var securePassword = new SecureString();
-                    foreach (char c in password)        // you should fetch the password
+                    foreach (char c in _secrets.Password)        // you should fetch the password
                         securePassword.AppendChar(c);  // keystroke by keystroke
 
-                    result = await app.AcquireTokenByUsernamePassword(scopes, options.AadUsername, securePassword)
+                    result = await app.AcquireTokenByUsernamePassword(scopes, _config.AadUsername, securePassword)
                                        .ExecuteAsync();
-                }
-                catch (MsalException ex)
-                {
-                    _logger.LogError(ex.Message);
-                    errorMessage = ex.Message;
+                    response.AccessToken = result.AccessToken;
+                    return response;
                 }
             }
-
-            var response = new TokenResponse
+            catch (Exception ex)
             {
-                AccessToken = result.AccessToken,
-                Exception = errorMessage
-            };
+                _logger.LogError(ex.Message);
+                response.Exception = ex.Message;
+            }
             return response;
         }
     }
