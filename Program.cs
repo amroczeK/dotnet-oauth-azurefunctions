@@ -1,7 +1,5 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Azure.Functions.Worker.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Solution.RuralWater.AZF.Options;
 using Solution.RuralWater.AZF.Services;
@@ -21,7 +19,7 @@ namespace Solution.RuralWater.AZF
                     });
                     services.AddOptions<AuthenticationOptions>().Configure<IConfiguration>((settings, configuration) =>
                     {
-                        configuration.GetSection(nameof(AuthenticationOptions)).Bind(settings);
+                        configuration.GetSection("AuthOptions").Bind(settings);
                     });
                     services.AddScoped<IQueryService, QueryService>();
                 })
