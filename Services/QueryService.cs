@@ -2,7 +2,7 @@ using System;
 using System.Net.Http.Headers;
 using GraphQL;
 using GraphQL.Client.Http;
-using GraphQL.Client.Serializer.Newtonsoft;
+using GraphQL.Client.Serializer.SystemTextJson;
 using Microsoft.Extensions.Options;
 using Solution.RuralWater.AZF.Options;
 
@@ -17,7 +17,7 @@ namespace Solution.RuralWater.AZF.Services
         }
         public GraphQLHttpClient CreateClient(string accessToken)
         {
-            var client = new GraphQLHttpClient(_config.GraphQlUrl, new NewtonsoftJsonSerializer());
+            var client = new GraphQLHttpClient(_config.GraphQlUrl, new SystemTextJsonSerializer());
             client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Constants.AuthorizationType, accessToken);
             client.HttpClient.DefaultRequestHeaders.Add("Origin", _config.Origin);
             return client;

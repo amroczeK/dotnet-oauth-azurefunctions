@@ -20,6 +20,7 @@
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0"/>
     <PackageReference Include="AutoMapper" Version="11.0.1"/>
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0"/>
+    <PackageReference Include="GraphQL.Client.Serializer.SystemTextJson" Version="4.0.2"/>
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
