@@ -5,9 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client;
 using Solution.RuralWater.AZF.Options;
 using Solution.RuralWater.AZF.Models;
-using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 
 namespace Solution.RuralWater.AZF.Helpers
 {
@@ -31,6 +29,10 @@ namespace Solution.RuralWater.AZF.Helpers
             _secrets = secrets;
         }
 
+        /// <summary>
+        /// Retrieve access token for app registration using specified Client ID, Username and Password for Password Credentials Flow.
+        /// </summary>
+        /// <returns>TokenReponse object</returns>
         public async Task<TokenResponse> GetAccessToken()
         {
             _logger.LogInformation("Getting Access Token");

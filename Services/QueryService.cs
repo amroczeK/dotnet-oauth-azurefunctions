@@ -15,6 +15,11 @@ namespace Solution.RuralWater.AZF.Services
         public QueryService(IOptions<Config> config) {
             _config = config.Value ?? throw new ArgumentException(nameof(config));
         }
+
+        /// <summary>
+        /// Create GraphQLHttpClient using endpoint and sets Authorization and Origin headers.
+        /// </summary>
+        /// <returns>GraphQLHttpClient object</returns>
         public GraphQLHttpClient CreateClient(string accessToken)
         {
             var client = new GraphQLHttpClient(_config.GraphQlUrl, new SystemTextJsonSerializer());
@@ -23,6 +28,14 @@ namespace Solution.RuralWater.AZF.Services
             return client;
         }
 
+        /// <summary>
+        /// Create GraphQLRequest using specified params.
+        /// </summary>
+        /// <param name="xdsName">Name of XDS</param>
+        /// <param name="xdsViewName">Name of XDS View</param>
+        /// <param name="version">Egress API version</param>
+        /// <param name="queryParams">Anonymous Type query parameter object for GraphQL request</param>
+        /// <returns>GraphQLRequest object</returns>
         public GraphQLRequest CreateRequest(string xdsName, string xdsViewName, string version, dynamic queryParams)
         {
             var request = new GraphQLRequest

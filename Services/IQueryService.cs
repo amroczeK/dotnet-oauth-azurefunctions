@@ -1,6 +1,5 @@
 using GraphQL;
 using GraphQL.Client.Http;
-using Solution.RuralWater.AZF.Options;
 
 namespace Solution.RuralWater.AZF.Services
 {

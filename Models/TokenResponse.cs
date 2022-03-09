@@ -1,5 +1,3 @@
-using Newtonsoft.Json;
-
 namespace Solution.RuralWater.AZF.Models
 {
     public class TokenResponse

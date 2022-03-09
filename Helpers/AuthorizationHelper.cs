@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Solution.RuralWater.AZF.Models;
 using Solution.RuralWater.AZF.Options;
 
@@ -33,6 +30,10 @@ namespace Solution.RuralWater.AZF.Helpers
             _secrets = secrets;
         }
 
+        /// <summary>
+        /// Parses request headers for Authorization header and ApiKey key and validates the value.
+        /// </summary>
+        /// <returns>AuthorizationResponse object</returns>
         public AuthorizationResponse ValidateApiKey(HttpHeadersCollection headers)
         {
             var response = new AuthorizationResponse();
