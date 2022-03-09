@@ -13,7 +13,7 @@ namespace Solution.RuralWater.AZF.Services
         private readonly AuthenticationOptions _authOptions;
 
         public QueryService(IOptions<AuthenticationOptions> authOptions) {
-            _authOptions = authOptions.Value ?? throw new ArgumentException(nameof(authOptions));
+            _authOptions = authOptions?.Value ?? throw new ArgumentException(nameof(authOptions));
         }
 
         /// <summary>

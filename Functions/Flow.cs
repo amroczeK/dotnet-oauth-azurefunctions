@@ -22,8 +22,8 @@ namespace Solution.RuralWater.AZF.Functions
         private readonly IQueryService _queryService;
 
         public Flow(IOptions<AuthenticationOptions> authOptions, IOptions<Secrets> secrets, IQueryService queryService){
-            _authOptions = authOptions.Value ?? throw new ArgumentException(nameof(authOptions));
-            _secrets = secrets.Value ?? throw new ArgumentException(nameof(secrets));
+            _authOptions = authOptions?.Value ?? throw new ArgumentException(nameof(authOptions));
+            _secrets = secrets?.Value ?? throw new ArgumentException(nameof(secrets));
             _queryService = queryService;
         }
 

@@ -23,8 +23,8 @@ namespace Solution.RuralWater.AZF.Functions
 
         public CellularDeviceHistory(IOptions<AuthenticationOptions> authOptions, IOptions<Secrets> secrets, IQueryService queryService)
         {
-            _authOptions = authOptions.Value ?? throw new ArgumentException(nameof(authOptions));
-            _secrets = secrets.Value ?? throw new ArgumentException(nameof(secrets));
+            _authOptions = authOptions?.Value ?? throw new ArgumentException(nameof(authOptions));
+            _secrets = secrets?.Value ?? throw new ArgumentException(nameof(secrets));
             _queryService = queryService;
         }
 
