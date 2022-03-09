@@ -72,7 +72,7 @@ namespace Solution.RuralWater.AZF.Functions
             {
                 logger.LogInformation("Querying {GraphQlUrl}", _config.GraphQlUrl);
 
-                GraphQLHttpClient client = _queryService.CreateClient(_config, result.AccessToken);
+                GraphQLHttpClient client = _queryService.CreateClient(result.AccessToken);
 
                 var xdsName = Constants.CellularDeviceHistoryXdsName;
                 var xdsViewName = "rdmw";

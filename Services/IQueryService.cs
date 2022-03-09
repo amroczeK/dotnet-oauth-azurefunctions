@@ -6,7 +6,7 @@ namespace Solution.RuralWater.AZF.Services
 {
     public interface IQueryService
     {
-        GraphQLHttpClient CreateClient(Config config, string accessToken);
+        GraphQLHttpClient CreateClient(string accessToken);
         GraphQLRequest CreateRequest(string xdsName, string xdsViewName, string version, dynamic queryParams);
     }
 }
