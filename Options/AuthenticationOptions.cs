@@ -1,6 +1,6 @@
 namespace Solution.RuralWater.AZF.Options
 {
-    public class Config
+    public class AuthenticationOptions
     {
         public string AccountId { get; set; }
         public string ClientId { get; set; }

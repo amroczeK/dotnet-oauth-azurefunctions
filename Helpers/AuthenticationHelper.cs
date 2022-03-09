@@ -13,19 +13,18 @@ namespace Solution.RuralWater.AZF.Helpers
     public interface IAuthenticationHelper
     {
         Task<TokenResponse> GetAccessToken();
-        //Task GetAzureFunctionKey();
     }
 
     public class AuthenticationHelper : IAuthenticationHelper
     {
-        private readonly Config _config;
+        private readonly AuthenticationOptions _authOptions;
         private readonly Secrets _secrets;
         private readonly ILogger _logger;
 
-        public AuthenticationHelper(ILogger logger, Config config, Secrets secrets)
+        public AuthenticationHelper(ILogger logger, AuthenticationOptions authOptions, Secrets secrets)
         {
             _logger = logger;
-            _config = config;
+            _authOptions = authOptions;
             _secrets = secrets;
         }
 
@@ -39,9 +38,9 @@ namespace Solution.RuralWater.AZF.Helpers
             var response = new TokenResponse();
             try
             {
-                var authorityUri = $"https://login.microsoftonline.com/{_config.TenantId}";
-                string[] scopes = new string[] { _config.Scope };
-                var app = PublicClientApplicationBuilder.Create(_config.ClientId)
+                var authorityUri = $"https://login.microsoftonline.com/{_authOptions.TenantId}";
+                string[] scopes = new string[] { _authOptions.Scope };
+                var app = PublicClientApplicationBuilder.Create(_authOptions.ClientId)
                         .WithAuthority(new Uri(authorityUri))
                         .Build();
                 var accounts = await app.GetAccountsAsync();
@@ -59,7 +58,7 @@ namespace Solution.RuralWater.AZF.Helpers
                     foreach (char c in _secrets.Password)        // you should fetch the password
                         securePassword.AppendChar(c);  // keystroke by keystroke
 
-                    result = await app.AcquireTokenByUsernamePassword(scopes, _config.AadUsername, securePassword)
+                    result = await app.AcquireTokenByUsernamePassword(scopes, _authOptions.AadUsername, securePassword)
                                        .ExecuteAsync();
                     response.AccessToken = result.AccessToken;
                     return response;

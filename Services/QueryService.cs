@@ -10,10 +10,10 @@ namespace Solution.RuralWater.AZF.Services
 {
     public class QueryService : IQueryService
     {
-        private readonly Config _config;
+        private readonly AuthenticationOptions _authOptions;
 
-        public QueryService(IOptions<Config> config) {
-            _config = config.Value ?? throw new ArgumentException(nameof(config));
+        public QueryService(IOptions<AuthenticationOptions> authOptions) {
+            _authOptions = authOptions.Value ?? throw new ArgumentException(nameof(authOptions));
         }
 
         /// <summary>
@@ -22,9 +22,9 @@ namespace Solution.RuralWater.AZF.Services
         /// <returns>GraphQLHttpClient object</returns>
         public GraphQLHttpClient CreateClient(string accessToken)
         {
-            var client = new GraphQLHttpClient(_config.GraphQlUrl, new SystemTextJsonSerializer());
+            var client = new GraphQLHttpClient(_authOptions.GraphQlUrl, new SystemTextJsonSerializer());
             client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Constants.AuthorizationType, accessToken);
-            client.HttpClient.DefaultRequestHeaders.Add("Origin", _config.Origin);
+            client.HttpClient.DefaultRequestHeaders.Add("Origin", _authOptions.Origin);
             return client;
         }
 

@@ -9,22 +9,6 @@ using Microsoft.Extensions.Primitives;
 
 namespace Solution.RuralWater.AZF.Helpers
 {
-
-    // public interface IQueryParamMapper
-    // {
-    //     dynamic MapParams(dynamic model, Dictionary<string, StringValues> queryDictionary);
-    // }
-    // public class QueryParamMapper : IQueryParamMapper
-    // {
-    //     public MapParams(dynamic model, Dictionary<string, StringValues> queryDictionary)
-    //     {
-    //         var config = new MapperConfiguration(cfg => { });
-    //         var mapper = config.CreateMapper();
-    //         var queryParams = mapper.Map<model>(queryDictionary);
-    //         return queryParams;
-    //     }
-    // }
-
     public interface IQueryParams
     {
         T ConvertDictionaryTo<T>(IDictionary<string, StringValues> dictionary) where T : new();

@@ -19,14 +19,12 @@ namespace Solution.RuralWater.AZF.Helpers
         private const string InvalidApiKeyError = "ApiKey is invalid";
         public const string ApiKeyHeaderName = "Authorization";
         private const string AuthorizationType = "ApiKey";
-        private readonly Config _config;
         private readonly Secrets _secrets;
         private readonly ILogger _logger;
 
-        public AuthorizationHelper(ILogger logger, Config config, Secrets secrets)
+        public AuthorizationHelper(ILogger logger, Secrets secrets)
         {
             _logger = logger;
-            _config = config;
             _secrets = secrets;
         }
 

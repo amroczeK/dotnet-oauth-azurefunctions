@@ -19,9 +19,9 @@ namespace Solution.RuralWater.AZF
                     {
                         configuration.GetSection(nameof(Secrets)).Bind(settings);
                     });
-                    services.AddOptions<Config>().Configure<IConfiguration>((settings, configuration) =>
+                    services.AddOptions<AuthenticationOptions>().Configure<IConfiguration>((settings, configuration) =>
                     {
-                        configuration.GetSection(nameof(Config)).Bind(settings);
+                        configuration.GetSection(nameof(AuthenticationOptions)).Bind(settings);
                     });
                     services.AddScoped<IQueryService, QueryService>();
                 })

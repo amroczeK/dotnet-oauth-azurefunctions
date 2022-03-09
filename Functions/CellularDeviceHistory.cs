@@ -17,21 +17,15 @@ namespace Solution.RuralWater.AZF.Functions
 {
     public class CellularDeviceHistory
     {
-        private readonly Config _config;
+        private readonly AuthenticationOptions _authOptions;
         private readonly Secrets _secrets;
         private readonly IQueryService _queryService;
 
-        public CellularDeviceHistory(IOptions<Config> config, IOptions<Secrets> secrets, IQueryService queryService)
+        public CellularDeviceHistory(IOptions<AuthenticationOptions> authOptions, IOptions<Secrets> secrets, IQueryService queryService)
         {
-            _config = config.Value ?? throw new ArgumentException(nameof(config));
+            _authOptions = authOptions.Value ?? throw new ArgumentException(nameof(authOptions));
             _secrets = secrets.Value ?? throw new ArgumentException(nameof(secrets));
             _queryService = queryService;
-        }
-
-        public CellularDeviceHistory(Secrets secrets, Config config)
-        {
-            _secrets = secrets;
-            _config = config;
         }
 
         [Function("GetCellularDeviceHistoryRdmw")]
@@ -44,7 +38,7 @@ namespace Solution.RuralWater.AZF.Functions
             var response = req.CreateResponse(HttpStatusCode.OK);
 
             // Validate Authorization header and ApiKey
-            AuthorizationHelper authorizationHelper = new AuthorizationHelper(logger, _config, _secrets);
+            AuthorizationHelper authorizationHelper = new AuthorizationHelper(logger, _secrets);
             var validate = authorizationHelper.ValidateApiKey(req.Headers);
 
             if (!validate.valid)
@@ -65,12 +59,12 @@ namespace Solution.RuralWater.AZF.Functions
             // Required: Convert parameters to dynamic object because GraphQLRequest Variables expects Anonymous Type...
             dynamic dynamicQueryParams = queryParams.DictionaryToDynamic(queryDictionary);
 
-            var authenticationHelper = new AuthenticationHelper(logger, _config, _secrets);
+            var authenticationHelper = new AuthenticationHelper(logger, _authOptions, _secrets);
             var result = await authenticationHelper.GetAccessToken();
 
             try
             {
-                logger.LogInformation("Querying {GraphQlUrl}", _config.GraphQlUrl);
+                logger.LogInformation("Querying {GraphQlUrl}", _authOptions.GraphQlUrl);
 
                 GraphQLHttpClient client = _queryService.CreateClient(result.AccessToken);
 
