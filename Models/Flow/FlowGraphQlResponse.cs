@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Solution.RuralWater.AZF.Models.Flow
 {
-    public class GraphQlResponse
+    public class FlowGraphQlResponse
     {
         [JsonProperty("egressData")]
         public List<FlowResponse> flowResponse { get; set; }

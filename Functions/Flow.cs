@@ -1,10 +1,8 @@
 using System;
 using System.Net;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Client.Http;
-using GraphQL.Client.Serializer.Newtonsoft;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -13,6 +11,7 @@ using Solution.RuralWater.AZF.Options;
 using Solution.RuralWater.AZF.Helpers;
 using Solution.RuralWater.AZF.Models.Flow;
 using Microsoft.Extensions.Options;
+using Solution.RuralWater.AZF.Services;
 
 namespace Solution.RuralWater.AZF.Functions
 {
@@ -71,33 +70,23 @@ namespace Solution.RuralWater.AZF.Functions
             {
                 logger.LogInformation("Querying {GraphQlUrl}", _config.GraphQlUrl);
 
-                var client = new GraphQLHttpClient(_config.GraphQlUrl, new NewtonsoftJsonSerializer());
-                client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Constants.AuthorizationType, result.AccessToken);
-                client.HttpClient.DefaultRequestHeaders.Add("Origin", _config.Origin);
+                QueryService qs = new QueryService();
+                GraphQLHttpClient client = qs.CreateClient(_config, result.AccessToken);
 
-                var request = new GraphQLRequest
-                {
-                    Query = Constants.Query,
-                    Variables = new
-                    {
-                        egressDataXdsName = Constants.FlowXdsName,
-                        egressDataViewName = "rdmw",
-                        egressDataVersion = "v1",
-                        egressDataIncludeTimeZone = false,
-                        egressDataParams = dynamicQueryParams
-                    }
-                };
+                var xdsName = Constants.FlowXdsName;
+                var xdsViewName = "rdmw";
+                var version = "v1";
+                GraphQLRequest request = qs.CreateRequest(xdsName, xdsViewName, version, dynamicQueryParams);
 
-                var data = await client.SendQueryAsync<GraphQlResponse>(request);
+                GraphQLResponse<FlowGraphQlResponse> data = await client.SendQueryAsync<FlowGraphQlResponse>(request);
 
                 await response.WriteAsJsonAsync(data.Data.flowResponse);
                 return response;
             }
             catch (Exception ex)
             {
-                logger.LogError($"Error occured querying GraphQL: {ex.Message}");
-                response.StatusCode = HttpStatusCode.BadRequest;
-                await response.WriteStringAsync($"Error occured querying GraphQL: {ex.Message}");
+                logger.LogError("Error occured querying GraphQL: {error}", ex.Message);
+                response.StatusCode = HttpStatusCode.InternalServerError;
                 return response;
             }
 

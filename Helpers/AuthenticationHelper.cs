@@ -37,7 +37,7 @@ namespace Solution.RuralWater.AZF.Helpers
             var response = new TokenResponse();
             try
             {
-                var authorityUri = $"https://login.microsoftonline.com/{_config.TenantId}/oauth2/v2.0/token";
+                var authorityUri = $"https://login.microsoftonline.com/{_config.TenantId}";
                 string[] scopes = new string[] { _config.Scope };
                 var app = PublicClientApplicationBuilder.Create(_config.ClientId)
                         .WithAuthority(new Uri(authorityUri))

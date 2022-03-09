@@ -43,14 +43,14 @@ namespace Solution.RuralWater.AZF.Helpers
                 string[] authHeaderParts = output.FirstOrDefault().Split(" ");
                 if (authHeaderParts.Length != 2 || authHeaderParts[0] != AuthorizationType)
                 {
-                    _logger.LogError($"{InvalidAuthorizationHeaderError}");
+                    _logger.LogError(InvalidAuthorizationHeaderError);
                     response.message = InvalidAuthorizationHeaderError;
                     response.statusCode = StatusCodes.Status401Unauthorized;
                     response.valid = false;
                 }
                 else if (!authHeaderParts[1].Equals(_secrets.VaultApiKey))
                 {
-                    _logger.LogError($"{InvalidApiKeyError}");
+                    _logger.LogError(InvalidApiKeyError);
                     response.message = InvalidApiKeyError;
                     response.statusCode = StatusCodes.Status401Unauthorized;
                     response.valid = false;
@@ -58,7 +58,7 @@ namespace Solution.RuralWater.AZF.Helpers
             }
             else
             {
-                _logger.LogError($"{MissingApiKeyHeaderError}");
+                _logger.LogError(MissingApiKeyHeaderError);
                 response.message = MissingApiKeyHeaderError;
                 response.statusCode = StatusCodes.Status401Unauthorized;
                 response.valid = false;
