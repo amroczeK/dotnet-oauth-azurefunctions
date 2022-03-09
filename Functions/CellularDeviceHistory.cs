@@ -68,9 +68,9 @@ namespace Solution.RuralWater.AZF.Functions
 
                 GraphQLHttpClient client = _queryService.CreateClient(result.AccessToken);
 
-                var xdsName = Constants.CellularDeviceHistoryXdsName;
-                var xdsViewName = "rdmw";
-                var version = "v1";
+                const string xdsName = Constants.CellularDeviceHistoryXdsName;
+                const string xdsViewName = "rdmw";
+                const string version = "v1";
                 var request = _queryService.CreateRequest(xdsName, xdsViewName, version, dynamicQueryParams);
 
                 GraphQLResponse<CDHGraphQlResponse> data = await client.SendQueryAsync<CDHGraphQlResponse>(request);
