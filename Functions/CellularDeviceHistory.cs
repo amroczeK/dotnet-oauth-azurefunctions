@@ -19,11 +19,13 @@ namespace Solution.RuralWater.AZF.Functions
     {
         private readonly Config _config;
         private readonly Secrets _secrets;
+        private readonly IQueryService _queryService;
 
-        public CellularDeviceHistory(IOptions<Config> config, IOptions<Secrets> secrets)
+        public CellularDeviceHistory(IOptions<Config> config, IOptions<Secrets> secrets, IQueryService queryService)
         {
             _config = config.Value ?? throw new ArgumentException(nameof(config));
             _secrets = secrets.Value ?? throw new ArgumentException(nameof(secrets));
+            _queryService = queryService;
         }
 
         public CellularDeviceHistory(Secrets secrets, Config config)
@@ -70,13 +72,12 @@ namespace Solution.RuralWater.AZF.Functions
             {
                 logger.LogInformation("Querying {GraphQlUrl}", _config.GraphQlUrl);
 
-                QueryService qs = new QueryService();
-                GraphQLHttpClient client = qs.CreateClient(_config, result.AccessToken);
+                GraphQLHttpClient client = _queryService.CreateClient(_config, result.AccessToken);
 
                 var xdsName = Constants.CellularDeviceHistoryXdsName;
                 var xdsViewName = "rdmw";
                 var version = "v1";
-                var request = qs.CreateRequest(xdsName, xdsViewName, version, dynamicQueryParams);
+                var request = _queryService.CreateRequest(xdsName, xdsViewName, version, dynamicQueryParams);
 
                 GraphQLResponse<CDHGraphQlResponse> data = await client.SendQueryAsync<CDHGraphQlResponse>(request);
 

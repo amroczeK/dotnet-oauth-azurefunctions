@@ -19,10 +19,12 @@ namespace Solution.RuralWater.AZF.Functions
     {
         private readonly Config _config;
         private readonly Secrets _secrets;
+        private readonly IQueryService _queryService;
 
-        public Flow(IOptions<Config> config, IOptions<Secrets> secrets){
+        public Flow(IOptions<Config> config, IOptions<Secrets> secrets, IQueryService queryService){
             _config = config.Value ?? throw new ArgumentException(nameof(config));
             _secrets = secrets.Value ?? throw new ArgumentException(nameof(secrets));
+            _queryService = queryService;
         }
 
 
@@ -70,13 +72,12 @@ namespace Solution.RuralWater.AZF.Functions
             {
                 logger.LogInformation("Querying {GraphQlUrl}", _config.GraphQlUrl);
 
-                QueryService qs = new QueryService();
-                GraphQLHttpClient client = qs.CreateClient(_config, result.AccessToken);
+                GraphQLHttpClient client = _queryService.CreateClient(_config, result.AccessToken);
 
                 var xdsName = Constants.FlowXdsName;
                 var xdsViewName = "rdmw";
                 var version = "v1";
-                GraphQLRequest request = qs.CreateRequest(xdsName, xdsViewName, version, dynamicQueryParams);
+                GraphQLRequest request = _queryService.CreateRequest(xdsName, xdsViewName, version, dynamicQueryParams);
 
                 GraphQLResponse<FlowGraphQlResponse> data = await client.SendQueryAsync<FlowGraphQlResponse>(request);
 

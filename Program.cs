@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Azure.Functions.Worker.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Solution.RuralWater.AZF.Options;
+using Solution.RuralWater.AZF.Services;
 
 namespace Solution.RuralWater.AZF
 {
@@ -22,6 +23,7 @@ namespace Solution.RuralWater.AZF
                     {
                         configuration.GetSection(nameof(Config)).Bind(settings);
                     });
+                    services.AddScoped<IQueryService, QueryService>();
                 })
                 .Build();
                 
