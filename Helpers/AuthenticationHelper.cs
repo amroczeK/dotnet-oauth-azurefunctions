@@ -6,13 +6,14 @@ using Microsoft.Identity.Client;
 using Solution.RuralWater.AZF.Options;
 using Solution.RuralWater.AZF.Models;
 using System;
+using System.Threading;
 
 namespace Solution.RuralWater.AZF.Helpers
 {
 
     public interface IAuthenticationHelper
     {
-        Task<TokenResponse> GetAccessToken();
+        Task<TokenResponse> GetAccessToken(CancellationToken cancellationToken);
     }
 
     public class AuthenticationHelper : IAuthenticationHelper
@@ -32,7 +33,7 @@ namespace Solution.RuralWater.AZF.Helpers
         /// Retrieve access token for app registration using specified Client ID, Username and Password for Password Credentials Flow.
         /// </summary>
         /// <returns>TokenReponse object</returns>
-        public async Task<TokenResponse> GetAccessToken()
+        public async Task<TokenResponse> GetAccessToken(CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Getting Access Token");
             var response = new TokenResponse();
