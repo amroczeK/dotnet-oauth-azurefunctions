@@ -12,13 +12,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2"/>
     <PackageReference Include="Microsoft.Identity.Client" Version="4.41.0"/>
     <PackageReference Include="GraphQL" Version="4.7.1"/>
-    <PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="4.0.2"/>
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0"/>
     <PackageReference Include="Microsoft.Azure.WebJobs" Version="3.0.31"/>
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.1.1"/>
     <PackageReference Include="GraphQL.Client" Version="4.0.2"/>
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0"/>
-    <PackageReference Include="AutoMapper" Version="11.0.1"/>
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0"/>
     <PackageReference Include="GraphQL.Client.Serializer.SystemTextJson" Version="4.0.2"/>
   </ItemGroup>
