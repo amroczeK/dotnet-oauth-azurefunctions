@@ -43,26 +43,26 @@ namespace Solution.RuralWater.AZF.Helpers
                 if (authHeaderParts.Length != 2 || authHeaderParts[0] != AuthorizationType)
                 {
                     _logger.LogError(InvalidAuthorizationHeaderError);
-                    response.message = InvalidAuthorizationHeaderError;
-                    response.statusCode = StatusCodes.Status401Unauthorized;
-                    response.valid = false;
+                    response.Message = InvalidAuthorizationHeaderError;
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Valid = false;
                 }
                 else if (!authHeaderParts[1].Equals(_secrets.VaultApiKey))
                 {
                     _logger.LogError(InvalidApiKeyError);
-                    response.message = InvalidApiKeyError;
-                    response.statusCode = StatusCodes.Status401Unauthorized;
-                    response.valid = false;
+                    response.Message = InvalidApiKeyError;
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Valid = false;
                 }
             }
             else
             {
                 _logger.LogError(MissingApiKeyHeaderError);
-                response.message = MissingApiKeyHeaderError;
-                response.statusCode = StatusCodes.Status401Unauthorized;
-                response.valid = false;
+                response.Message = MissingApiKeyHeaderError;
+                response.StatusCode = StatusCodes.Status401Unauthorized;
+                response.Valid = false;
             }
-            response.valid = true;
+            response.Valid = true;
             return response;
         }
     }

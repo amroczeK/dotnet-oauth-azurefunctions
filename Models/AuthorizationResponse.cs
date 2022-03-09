@@ -5,10 +5,10 @@ namespace Solution.RuralWater.AZF.Models
 {
     public class AuthorizationResponse
     {
-        public string message { get; set; } = "";
+        public string Message { get; set; } = "";
 
-        public int statusCode { get; set; } = StatusCodes.Status200OK;
+        public int StatusCode { get; set; } = StatusCodes.Status200OK;
 
-        public Boolean valid { get; set; } = false;
+        public Boolean Valid { get; set; } = false;
     }
 }

@@ -41,10 +41,10 @@ namespace Solution.RuralWater.AZF.Functions
             AuthorizationHelper authorizationHelper = new AuthorizationHelper(logger, _secrets);
             var validate = authorizationHelper.ValidateApiKey(req.Headers);
 
-            if (!validate.valid)
+            if (!validate.Valid)
             {
                 response.StatusCode = HttpStatusCode.BadRequest;
-                await response.WriteStringAsync(validate.message);
+                await response.WriteStringAsync(validate.Message);
                 return response;
             }
 
