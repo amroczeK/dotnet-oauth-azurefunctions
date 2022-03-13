@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Solution.RuralWater.AZF.Models.Flow
 {
     public class FlowGraphQlResponse
     {
-        [JsonProperty("egressData")]
+        [JsonPropertyName("egressData")]
         public List<FlowResponse> flowResponse { get; set; }
     }
 }

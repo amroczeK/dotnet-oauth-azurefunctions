@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Solution.RuralWater.AZF.Models.CellularDeviceHistory
 {
     public class CDHGraphQlResponse
     {
-        [JsonProperty("egressData")]
+        [JsonPropertyName("egressData")]
         public List<CellularDeviceHistoryResponse> cellularDeviceHistoryResponse { get; set; }
     }
 }

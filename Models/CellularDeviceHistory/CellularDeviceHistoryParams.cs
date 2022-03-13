@@ -1,37 +1,37 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Solution.RuralWater.AZF.Models.CellularDeviceHistory
 {
     public class CellularDeviceHistoryParams
     {
-        [JsonProperty("accountId", Required = Required.Always)]
+        [JsonPropertyName("accountId")]
         public string accountId { get; set; }
 
-        [JsonProperty("tz")]
+        [JsonPropertyName("tz")]
         public string tz { get; set; } = "UTC";
 
-        [JsonProperty("deviceId")]
+        [JsonPropertyName("deviceId")]
         public string deviceId { get; set; }
 
-        [JsonProperty("siteId")]
+        [JsonPropertyName("siteId")]
         public string siteId { get; set; }
 
-        [JsonProperty("serialNumber")]
+        [JsonPropertyName("serialNumber")]
         public string serialNumber { get; set; }
 
-        [JsonProperty("page")]
+        [JsonPropertyName("page")]
         public string page { get; set; }
 
-        [JsonProperty("perPage")]
+        [JsonPropertyName("perPage")]
         public string perPage { get; set; }
 
-        [JsonProperty("sortBy")]
+        [JsonPropertyName("sortBy")]
         public string sortBy { get; set; }
 
-        [JsonProperty("sort")]
+        [JsonPropertyName("sort")]
         public string sort { get; set; }
 
-        [JsonProperty("combineWith")]
+        [JsonPropertyName("combineWith")]
         public string combineWith { get; set; }
 
         public CellularDeviceHistoryParams(){
