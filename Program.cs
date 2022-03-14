@@ -20,7 +20,7 @@ namespace Solution.RuralWater.AZF
                         configuration.GetSection(nameof(Secrets)).Bind(settings);
                     }).Validate(config =>
                     {
-                        if (string.IsNullOrEmpty(config.Password) || string.IsNullOrEmpty(config.VaultApiKey))
+                        if (string.IsNullOrEmpty(config.Password) || string.IsNullOrEmpty(config.ApiKey))
                             return false;
 
                         return true;

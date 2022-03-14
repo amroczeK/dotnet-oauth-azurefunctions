@@ -11,6 +11,6 @@
     "Config:AadUsername":"",
     "Config:GraphQlUrl":"",
     "Secrets:Password": "",
-    "Secrets:VaultApiKey": ""
+    "Secrets:ApiKey": ""
   }
 }

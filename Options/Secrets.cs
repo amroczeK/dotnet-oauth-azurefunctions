@@ -18,12 +18,12 @@ namespace Solution.RuralWater.AZF.Options
         public string Password { get; set; }
 
         /// <remarks>
-        /// The <c>VaultApiKey</c> is a <see langword="string"/> that is assigned to the 
+        /// The <c>ApiKey</c> is a <see langword="string"/> that is assigned to the 
         /// Azure Function.
         /// <para>
         /// The value is stored in the Azure Key Vault.
         /// </para>
         /// </remarks>
-        public string VaultApiKey { get; set; }
+        public string ApiKey { get; set; }
     }
 }

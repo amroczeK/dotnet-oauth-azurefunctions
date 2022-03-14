@@ -48,7 +48,7 @@ namespace Solution.RuralWater.AZF.Helpers
                     response.StatusCode = StatusCodes.Status401Unauthorized;
                     response.Valid = false;
                 }
-                else if (!authHeaderParts[1].Equals(_secrets.VaultApiKey))
+                else if (!authHeaderParts[1].Equals(_secrets.ApiKey))
                 {
                     _logger.LogError(InvalidApiKeyError);
                     response.Message = InvalidApiKeyError;
