@@ -2,6 +2,9 @@ using System.Text.Json.Serialization;
 
 namespace Solution.RuralWater.AZF.Models.CellularDeviceHistory
 {
+    /// <summary>
+    /// Object with properties for the response returned from Egress API for Cellular Device History XDS.
+    /// </summary>
     public class CellularDeviceHistoryResponse
     {
         [JsonPropertyName("data_source_id")]
