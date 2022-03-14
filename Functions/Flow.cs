@@ -39,17 +39,6 @@ namespace Solution.RuralWater.AZF.Functions
 
             var response = req.CreateResponse(HttpStatusCode.OK);
 
-            // Validate Authorization header and ApiKey
-            AuthorizationHelper authorizationHelper = new AuthorizationHelper(logger, _secrets);
-            var validate = authorizationHelper.ValidateApiKey(req.Headers);
-
-            if (!validate.Valid)
-            {
-                response.StatusCode = HttpStatusCode.BadRequest;
-                await response.WriteStringAsync(validate.Message);
-                return response;
-            }
-
             // Parse query parameters
             var queryDictionary = QueryHelpers.ParseQuery(req.Url.Query);
 
