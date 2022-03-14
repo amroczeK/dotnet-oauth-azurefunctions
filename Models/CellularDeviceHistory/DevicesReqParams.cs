@@ -4,16 +4,16 @@ namespace Solution.RuralWater.AZF.Models.CellularDeviceHistory
 {
     public class DevicesReqParams
     {
-        [JsonPropertyName("site_id")]
-        public string SiteId { get; set; }
+        [JsonPropertyName("SiteId")]
+        public string site_id { get; set; }
 
-        [JsonPropertyName("device_id")]
-        public string DeviceId { get; set; }
+        [JsonPropertyName("DeviceId")]
+        public string device_id { get; set; }
 
-        [JsonPropertyName("offset")]
-        public int Offset { get; set; }
+        [JsonPropertyName("Offset")]
+        public int offset { get; set; }
 
-        [JsonPropertyName("limit")]
-        public int Limit { get; set; }
+        [JsonPropertyName("Limit")]
+        public int limit { get; set; }
     }
 }

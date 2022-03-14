@@ -69,5 +69,31 @@ namespace Solution.RuralWater.AZF.Helpers
 
             return result;
         }
+
+        public static dynamic DictionaryToDynamic(Dictionary<string, object> queryDictionary)
+        {
+            dynamic result = queryDictionary.Aggregate(new ExpandoObject() as IDictionary<string, Object>,
+                                        (a, p) => { a.Add(p.Key, p.Value); return a; });
+
+            return result;
+        }
+
+        public static Dictionary<string, object> ConvertObjectToDictionary(object arg)
+        {
+            return arg.GetType().GetProperties().ToDictionary(property => property.Name, property => property.GetValue(arg));
+        }
+
+        public static T ConvertDictionaryTo<T>(IDictionary<string, object> dictionary) where T : new()
+        {
+            Type type = typeof(T);
+            T ret = new T();
+
+            foreach (var keyValue in dictionary)
+            {
+                type.GetProperty(keyValue.Key).SetValue(ret, keyValue.Value, null);
+            }
+
+            return ret;
+        }
     }
 }
