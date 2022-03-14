@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json;
 
 namespace Solution.RuralWater.AZF.Helpers
 {
@@ -15,6 +16,13 @@ namespace Solution.RuralWater.AZF.Helpers
     /// <returns>TokenReponse object</returns>
     public static class QueryParams
     {
+        public static Dictionary<string, TValue> ToDictionary<TValue>(object obj)
+        {
+            var json = JsonConvert.SerializeObject(obj);
+            var dictionary = JsonConvert.DeserializeObject<Dictionary<string, TValue>>(json);
+            return dictionary;
+        }
+        
         public static T ConvertDictionaryTo<T>(IDictionary<string, StringValues> dictionary) where T : new()
         {
             Type type = typeof(T);

@@ -52,7 +52,6 @@ namespace Solution.RuralWater.AZF.Functions
             var queryDictionary = QueryHelpers.ParseQuery(req.Url.Query);
 
             // Validate required query parameters
-            //var queryParams = new QueryParams();
             response = await QueryParams.ValidateQueryParams(response, queryDictionary);
             if (response.StatusCode == HttpStatusCode.BadRequest) return response;
 
