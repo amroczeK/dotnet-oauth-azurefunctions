@@ -78,7 +78,7 @@ namespace Solution.RuralWater.AZF.Functions
                 const string version = "v1";
                 GraphQLRequest request = _queryService.CreateRequest(xdsName, xdsViewName, version, dynamicQueryParams);
 
-                GraphQLResponse<FlowGraphQlResponse> data = await client.SendQueryAsync<FlowGraphQlResponse>(request);
+                var data = await client.SendQueryAsync<FlowGraphQlResponse>(request);
 
                 await response.WriteAsJsonAsync(data.Data.flowResponse);
                 return response;

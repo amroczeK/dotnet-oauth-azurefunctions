@@ -25,8 +25,8 @@ namespace Solution.RuralWater.AZF.Helpers
         public AuthenticationHelper(ILogger logger, AuthenticationOptions authOptions, Secrets secrets)
         {
             _logger = logger;
-            _authOptions = authOptions;
-            _secrets = secrets;
+            _authOptions = authOptions ?? throw new ArgumentException(nameof(authOptions));
+            _secrets = secrets ?? throw new ArgumentException(nameof(secrets));
         }
 
         /// <summary>
@@ -54,7 +54,6 @@ namespace Solution.RuralWater.AZF.Helpers
                 }
                 else
                 {
-
                     var securePassword = new SecureString();
                     foreach (char c in _secrets.Password)        // you should fetch the password
                         securePassword.AppendChar(c);  // keystroke by keystroke
@@ -67,7 +66,7 @@ namespace Solution.RuralWater.AZF.Helpers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError(ex.Message, "Unhandled exception inside AuthenticationHelper.");
                 response.Exception = ex.Message;
             }
             return response;

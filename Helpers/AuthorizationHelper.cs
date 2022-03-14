@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -25,7 +26,7 @@ namespace Solution.RuralWater.AZF.Helpers
         public AuthorizationHelper(ILogger logger, Secrets secrets)
         {
             _logger = logger;
-            _secrets = secrets;
+            _secrets = secrets ?? throw new ArgumentException(nameof(secrets));
         }
 
         /// <summary>

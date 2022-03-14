@@ -71,9 +71,9 @@ namespace Solution.RuralWater.AZF.Functions
                 const string xdsName = Constants.CellularDeviceHistoryXdsName;
                 const string xdsViewName = "rdmw";
                 const string version = "v1";
-                var request = _queryService.CreateRequest(xdsName, xdsViewName, version, dynamicQueryParams);
+                GraphQLRequest request = _queryService.CreateRequest(xdsName, xdsViewName, version, dynamicQueryParams);
 
-                GraphQLResponse<CDHGraphQlResponse> data = await client.SendQueryAsync<CDHGraphQlResponse>(request);
+                var data = await client.SendQueryAsync<CDHGraphQlResponse>(request);
 
                 await response.WriteAsJsonAsync(data.Data.cellularDeviceHistoryResponse);
                 return response;
