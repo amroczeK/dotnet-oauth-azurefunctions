@@ -30,7 +30,7 @@ namespace Solution.RuralWater.AZF.Functions
 
         [Function("GetCellularDeviceHistoryRdmw")]
         public async Task<HttpResponseData> GetCellularDeviceHistoryRdmw(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "data/cellular-device-history/rdmw")] HttpRequestData req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "/devices")] HttpRequestData req,
             FunctionContext executionContext)
         {
             var logger = executionContext.GetLogger("Rdmw");
