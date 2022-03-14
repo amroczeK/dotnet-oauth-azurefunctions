@@ -52,12 +52,11 @@ namespace Solution.RuralWater.AZF.Functions
             var queryDictionary = QueryHelpers.ParseQuery(req.Url.Query);
 
             // Validate required query parameters
-            var queryParams = new QueryParams();
-            response = await queryParams.ValidateQueryParams(response, queryDictionary);
+            response = await QueryParams.ValidateQueryParams(response, queryDictionary);
             if (response.StatusCode == HttpStatusCode.BadRequest) return response;
 
             // Required: Convert parameters to dynamic object because GraphQLRequest Variables expects Anonymous Type...
-            dynamic dynamicQueryParams = queryParams.DictionaryToDynamic(queryDictionary);
+            dynamic dynamicQueryParams = QueryParams.DictionaryToDynamic(queryDictionary);
 
             // Get Bearer token using Password Credentials flow to be able to query GraphQL layer
             var authenticationHelper = new AuthenticationHelper(logger, _authOptions, _secrets);

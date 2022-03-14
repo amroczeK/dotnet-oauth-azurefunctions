@@ -18,14 +18,12 @@ namespace Solution.RuralWater.AZF.Helpers
         dynamic DictionaryToDynamic(Dictionary<string, StringValues> queryDictionary);
     }
 
-    public class QueryParams : IQueryParams
+    public static class QueryParams
     {
-        public QueryParams()
-        {
 
-        }
 
-        public T ConvertDictionaryTo<T>(IDictionary<string, StringValues> dictionary) where T : new()
+
+        public static T ConvertDictionaryTo<T>(IDictionary<string, StringValues> dictionary) where T : new()
         {
             Type type = typeof(T);
             T ret = new T();
@@ -38,7 +36,7 @@ namespace Solution.RuralWater.AZF.Helpers
             return ret;
         }
 
-        public async Task<HttpResponseData> ValidateQueryParams(HttpResponseData response, Dictionary<string, StringValues> queryDictionary)
+        public static async Task<HttpResponseData> ValidateQueryParams(HttpResponseData response, Dictionary<string, StringValues> queryDictionary)
         {
             if (queryDictionary.TryGetValue("accountId", out var id))
             {
@@ -56,7 +54,7 @@ namespace Solution.RuralWater.AZF.Helpers
             return response;
         }
 
-        public dynamic DictionaryToDynamic(Dictionary<string, StringValues> queryDictionary)
+        public static dynamic DictionaryToDynamic(Dictionary<string, StringValues> queryDictionary)
         {
             dynamic result = queryDictionary.Aggregate(new ExpandoObject() as IDictionary<string, Object>,
                                         (a, p) => { a.Add(p.Key, p.Value); return a; });
