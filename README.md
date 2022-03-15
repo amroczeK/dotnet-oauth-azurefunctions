@@ -9,6 +9,8 @@
 1. Deploy the Azure Function to your tenancy.
 2. Create an Azure Key Vault to connect your Azure Function following this tutorial. https://www.youtube.com/watch?v=6HKj5hOuD00
 3. Reference local.settings.json.example for the steps below.
-4. After watching the tutorial above, navigate to your Azure Function and go to Settings -> Configuration -> Application settings and add the secrets with the following 'name' syntax 'Secrets:keyName' and have the value reference the URL to the secrets in the Azure Key Vault e.g. '@Microsoft.KeyVault(SecretUri=https://ruralwaterazf.vault.azure.net/secrets/ApiKey/5179385f0ea84425b5d77e159ec35ac7)'
-5. Add the application options using the synax 'AuthOptions:keyName' and add the appropriate value for your applications configuration.
-6. These options and secrets will get injected into the application during runtime.
+4. After watching the tutorial above, navigate to your Azure Function and go to Settings -> Configuration -> Application settings add the application options with the following 'name' syntax 'AuthOptions:keyName' and add the appropriate value for your applications configuration.
+5. Repeat the above for your secrets 'Secrets:keyName' and have the value reference the URL to the secrets in the Azure Key Vault e.g. '@Microsoft.KeyVault(SecretUri=https://ruralwaterazf.vault.azure.net/secrets/ApiKey/5179385f0ea84425b5d77e159ec35ac7)'
+6. Navigate to App keys and create a new host key for the Azure Function, host keys apply to all HTTP functions.
+7. These options and secrets will get injected into the application during runtime.
+8. (OPTIONAL) If you don't want to use AuthorizationLevel.Function, you can add the created Host key's value to configuration with key name 'Secrets:ApiKey' and incoming requests can use 'Authorization' header with key 'ApiKey', and utilize the AuthorizationHelper.ValidateApiKey method to authorize the request.
