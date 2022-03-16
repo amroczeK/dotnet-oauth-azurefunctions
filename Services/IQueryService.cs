@@ -1,5 +1,6 @@
 using GraphQL;
 using GraphQL.Client.Http;
+using GraphQL.Client.Serializer.SystemTextJson;
 
 namespace Solution.RuralWater.AZF.Services
 {

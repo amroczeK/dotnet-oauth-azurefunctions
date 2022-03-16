@@ -13,6 +13,8 @@ using Solution.RuralWater.AZF.Models.Flow;
 using Microsoft.Extensions.Options;
 using Solution.RuralWater.AZF.Services;
 using System.Collections.Generic;
+using GraphQL.Client.Serializer.SystemTextJson;
+using System.Text.Json;
 
 namespace Solution.RuralWater.AZF.Functions
 {
@@ -107,19 +109,7 @@ namespace Solution.RuralWater.AZF.Functions
             var queryDictionary = QueryHelpers.ParseQuery(req.Url.Query);
 
             var reqParams = QueryParams.ConvertDictionaryTo<MeasurementsReqParams>(queryDictionary);
-
-            object flowParams = new
-            {
-                accountId = _authOptions.AccountId,
-                //SiteId = reqParams.site_id,
-                //DeviceId = reqParams.device_id,
-                tz = "UTC"
-            };
-
-            Dictionary<string, object> test = QueryParams.ConvertObjectToDictionary(flowParams);
-
-            // Required: Convert parameters to dynamic object because GraphQLRequest Variables expects Anonymous Type...
-            dynamic dynamicQueryParams = QueryParams.DictionaryToDynamic(test);
+            reqParams.accountId = _authOptions.AccountId;
 
             // Get Bearer token using Password Credentials flow to be able to query GraphQL layer
             var authenticationHelper = new AuthenticationHelper(logger, _authOptions, _secrets);
@@ -140,7 +130,7 @@ namespace Solution.RuralWater.AZF.Functions
                 const string xdsName = Constants.FlowXdsName;
                 const string xdsViewName = "rdmw";
                 const string version = "v1";
-                GraphQLRequest request = _queryService.CreateRequest(xdsName, xdsViewName, version, flowParams);
+                GraphQLRequest request = _queryService.CreateRequest(xdsName, xdsViewName, version, reqParams);
 
                 var data = await client.SendQueryAsync<FlowGraphQlResponse>(request);
 

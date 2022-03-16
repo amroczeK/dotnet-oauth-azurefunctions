@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http.Headers;
+using System.Text.Json;
 using GraphQL;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.SystemTextJson;
@@ -12,7 +13,8 @@ namespace Solution.RuralWater.AZF.Services
     {
         private readonly AuthenticationOptions _authOptions;
 
-        public QueryService(IOptions<AuthenticationOptions> authOptions) {
+        public QueryService(IOptions<AuthenticationOptions> authOptions)
+        {
             _authOptions = authOptions?.Value ?? throw new ArgumentException(nameof(authOptions));
         }
 
@@ -22,7 +24,7 @@ namespace Solution.RuralWater.AZF.Services
         /// <returns>GraphQLHttpClient object</returns>
         public GraphQLHttpClient CreateClient(string accessToken)
         {
-            var client = new GraphQLHttpClient(_authOptions.GraphQlUrl, new SystemTextJsonSerializer());
+            var client = new GraphQLHttpClient(_authOptions.GraphQlUrl, new SystemTextJsonSerializer(new JsonSerializerOptions()));
             client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Constants.AuthorizationType, accessToken);
             client.HttpClient.DefaultRequestHeaders.Add("Origin", _authOptions.Origin);
             return client;
@@ -48,7 +50,8 @@ namespace Solution.RuralWater.AZF.Services
                     egressDataVersion = version,
                     egressDataIncludeTimeZone = false,
                     egressDataParams = queryParams
-                }
+                },
+                OperationName = "EgressQuery"
             };
             return request;
         }

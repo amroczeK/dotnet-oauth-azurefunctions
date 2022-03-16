@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
+using Solution.RuralWater.AZF.Models.Flow;
 
 namespace Solution.RuralWater.AZF.Helpers
 {
@@ -79,6 +80,10 @@ namespace Solution.RuralWater.AZF.Helpers
         }
 
         public static Dictionary<string, object> ConvertObjectToDictionary(object arg)
+        {
+            return arg.GetType().GetProperties().ToDictionary(property => property.Name, property => property.GetValue(arg));
+        }
+        public static Dictionary<string, object> ConvertObjectToDictionary(MeasurementsReqParams arg)
         {
             return arg.GetType().GetProperties().ToDictionary(property => property.Name, property => property.GetValue(arg));
         }

@@ -4,6 +4,12 @@ namespace Solution.RuralWater.AZF.Models.CellularDeviceHistory
 {
     public class DevicesReqParams
     {
+        [JsonPropertyName("accountId")]
+        public string accountId { get; set; }
+
+        [JsonPropertyName("tz")]
+        public string tz { get; set; } = "UTC";
+        
         [JsonPropertyName("SiteId")]
         public string site_id { get; set; }
 

@@ -110,18 +110,9 @@ namespace Solution.RuralWater.AZF.Functions
             var queryDictionary = QueryHelpers.ParseQuery(req.Url.Query);
 
             var reqParams = QueryParams.ConvertDictionaryTo<DevicesReqParams>(queryDictionary);
+            reqParams.accountId = _authOptions.AccountId;
 
-            object cdhParams = new
-            {
-                accountId = _authOptions.AccountId,
-                //SiteId = reqParams.site_id,
-                //DeviceId = reqParams.device_id,
-                tz = "UTC"
-            };
-
-            // Required: Convert parameters to dynamic object because GraphQLRequest Variables expects Anonymous Type...
-            dynamic dynamicQueryParams = QueryParams.DictionaryToDynamic(queryDictionary);
-
+            // Get Bearer token using Password Credentials flow to be able to query GraphQL layer
             var authenticationHelper = new AuthenticationHelper(logger, _authOptions, _secrets);
             var result = await authenticationHelper.GetAccessToken();
 
@@ -134,7 +125,7 @@ namespace Solution.RuralWater.AZF.Functions
                 const string xdsName = Constants.CellularDeviceHistoryXdsName;
                 const string xdsViewName = "rdmw";
                 const string version = "v1";
-                GraphQLRequest request = _queryService.CreateRequest(xdsName, xdsViewName, version, cdhParams);
+                GraphQLRequest request = _queryService.CreateRequest(xdsName, xdsViewName, version, reqParams);
 
                 var data = await client.SendQueryAsync<CDHGraphQlResponse>(request);
 
