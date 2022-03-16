@@ -3,12 +3,24 @@ using Microsoft.AspNetCore.Http;
 
 namespace Solution.RuralWater.AZF.Models
 {
+    /// <summary>
+    /// Object with properties to describe if Authorization was successful or not.
+    /// </summary>
     public class AuthorizationResponse
     {
-        public string message { get; set; } = "";
+        /// <summary>
+        /// Exception message if Authorization fails.
+        /// </summary>
+        public string Message { get; set; } = "";
 
-        public int statusCode { get; set; } = StatusCodes.Status200OK;
+        /// <summary>
+        /// Status code from Authorization helper, default = 200.
+        /// </summary>
+        public int StatusCode { get; set; } = StatusCodes.Status200OK;
 
-        public Boolean valid { get; set; } = true;
+        /// <summary>
+        /// Boolean to indicate if ApiKey from Hydstra is valid.
+        /// </summary>
+        public Boolean Valid { get; set; } = false;
     }
 }

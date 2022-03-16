@@ -1,29 +1,36 @@
 using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using System.Web;
-using AutoMapper;
 using GraphQL;
 using GraphQL.Client.Http;
-using GraphQL.Client.Serializer.Newtonsoft;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json;
-using Solution.RuralWater.AZF.Config;
+using Solution.RuralWater.AZF.Options;
 using Solution.RuralWater.AZF.Helpers;
 using Solution.RuralWater.AZF.Models.Flow;
+using Microsoft.Extensions.Options;
+using Solution.RuralWater.AZF.Services;
+using System.Collections.Generic;
+using GraphQL.Client.Serializer.SystemTextJson;
+using System.Text.Json;
 
 namespace Solution.RuralWater.AZF.Functions
 {
     public class Flow
     {
+        private readonly AuthenticationOptions _authOptions;
+        private readonly Secrets _secrets;
+        private readonly IQueryService _queryService;
+
+        public Flow(IOptions<AuthenticationOptions> authOptions, IOptions<Secrets> secrets, IQueryService queryService)
+        {
+            _authOptions = authOptions?.Value ?? throw new ArgumentException(nameof(authOptions));
+            _secrets = secrets?.Value ?? throw new ArgumentException(nameof(secrets));
+            _queryService = queryService;
+        }
+
         [Function("GetFlowRdmw")]
         public async Task<HttpResponseData> GetFlowRdmw(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "data/flow/rdmw")] HttpRequestData req,
@@ -33,83 +40,107 @@ namespace Solution.RuralWater.AZF.Functions
 
             var response = req.CreateResponse(HttpStatusCode.OK);
 
-            Secrets secrets = new Secrets(logger);
+            // Validate Authorization header and ApiKey
+            AuthorizationHelper authorizationHelper = new AuthorizationHelper(logger, _secrets);
+            var validate = authorizationHelper.ValidateApiKey(req.Headers);
 
-            AuthorizationHelper authorizationHelper = new AuthorizationHelper(logger);
-            var validate = authorizationHelper.ValidateApiKey(req.Headers, secrets.VaultApiKey);
-
-            if (!validate.valid)
+            if (!validate.Valid)
             {
                 response.StatusCode = HttpStatusCode.BadRequest;
-                await response.WriteStringAsync(validate.message);
+                await response.WriteStringAsync(validate.Message);
                 return response;
             }
 
+            // Parse query parameters
             var queryDictionary = QueryHelpers.ParseQuery(req.Url.Query);
 
-            var queryParams = new QueryParams();
-            response = await queryParams.ValidateHeaders(response, queryDictionary);
+            // Validate required query parameters
+            response = await QueryParamHelpers.ValidateQueryParams(response, queryDictionary);
             if (response.StatusCode == HttpStatusCode.BadRequest) return response;
 
-            // Fails
-            FlowParams flowParams = queryParams.ConvertDictionaryTo<FlowParams>(queryDictionary);
-            // Fails
-            //object flowParams = ConvertDictionaryTo<FlowParams>(queryDictionary);
+            // Required: Convert parameters to dynamic object because GraphQLRequest Variables expects Anonymous Type...
+            dynamic dynamicQueryParams = QueryParamHelpers.DictionaryToDynamic(queryDictionary);
 
-            // Fails
-            //var json = JsonConvert.SerializeObject(flowParams);
-            //var obj = JsonConvert.DeserializeObject(json);
+            // Get Bearer token using Password Credentials flow to be able to query GraphQL layer
+            var authenticationHelper = new AuthenticationHelper(logger, _authOptions, _secrets);
+            var result = await authenticationHelper.GetAccessToken();
 
-            var authenticationHelper = new AuthenticationHelper(logger);
-            var result = await authenticationHelper.GetAccessToken(secrets.Password);
-
-            // Fails
-            // FlowParams test = new FlowParams{
-            //     accountId = "11",
-            //     tz = "UTC"
-            // };
-
-            // Fails
-            //object test3 = (object)test;
+            if (result.AccessToken == null)
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
+            }
 
             try
             {
-                logger.LogInformation($"Querying {Constants.GraphQlUrl}");
+                logger.LogInformation("Querying {GraphQlUrl}", _authOptions.GraphQlUrl);
 
-                var client = new GraphQLHttpClient(Constants.GraphQlUrl, new NewtonsoftJsonSerializer());
-                client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Constants.AuthorizationHeader, result.AccessToken);
-                client.HttpClient.DefaultRequestHeaders.Add("Origin", Constants.Origin);
+                GraphQLHttpClient client = _queryService.CreateClient(result.AccessToken);
 
-                // Works
-                object parameters = new
-                {
-                    accountId = flowParams.accountId,
-                    tz = flowParams.tz
-                };
+                const string xdsName = Constants.FlowXdsName;
+                const string xdsViewName = "rdmw";
+                const string version = "v1";
+                GraphQLRequest request = _queryService.CreateRequest(xdsName, xdsViewName, version, dynamicQueryParams);
 
-                var request = new GraphQLRequest
-                {
-                    Query = Constants.Query,
-                    Variables = new
-                    {
-                        egressDataXdsName = Constants.FlowXdsName,
-                        egressDataViewName = "rdmw",
-                        egressDataVersion = "v1",
-                        egressDataIncludeTimeZone = false,
-                        egressDataParams = parameters
-                    }
-                };
-
-                var data = await client.SendQueryAsync<GraphQlResponse>(request);
+                var data = await client.SendQueryAsync<FlowGraphQlResponse>(request);
 
                 await response.WriteAsJsonAsync(data.Data.flowResponse);
                 return response;
             }
             catch (Exception ex)
             {
-                logger.LogError($"Error occured querying GraphQL: {ex.Message}");
+                logger.LogError("Error occured querying GraphQL: {error}", ex.Message);
+                response.StatusCode = HttpStatusCode.InternalServerError;
+                return response;
+            }
+
+        }
+
+        [Function("GetMeasurements")]
+        public async Task<HttpResponseData> GetMeasurements(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "measurements")] HttpRequestData req,
+            FunctionContext executionContext)
+        {
+            var logger = executionContext.GetLogger("Rdmw");
+
+            var response = req.CreateResponse(HttpStatusCode.OK);
+
+            // Parse query parameters
+            var queryDictionary = QueryHelpers.ParseQuery(req.Url.Query);
+
+            var reqParams = QueryParamHelpers.ConvertDictionaryTo<MeasurementsReqParams>(queryDictionary);
+            reqParams.accountId = _authOptions.AccountId;
+
+            // Get Bearer token using Password Credentials flow to be able to query GraphQL layer
+            var authenticationHelper = new AuthenticationHelper(logger, _authOptions, _secrets);
+            var result = await authenticationHelper.GetAccessToken();
+
+            if (result.AccessToken == null)
+            {
                 response.StatusCode = HttpStatusCode.BadRequest;
-                await response.WriteStringAsync($"Error occured querying GraphQL: {ex.Message}");
+                return response;
+            }
+
+            try
+            {
+                logger.LogInformation("Querying {GraphQlUrl}", _authOptions.GraphQlUrl);
+
+                GraphQLHttpClient client = _queryService.CreateClient(result.AccessToken);
+
+                const string xdsName = Constants.FlowXdsName;
+                const string xdsViewName = "rdmw";
+                const string version = "v1";
+                GraphQLRequest request = _queryService.CreateRequest(xdsName, xdsViewName, version, reqParams);
+
+                var data = await client.SendQueryAsync<FlowGraphQlResponse>(request);
+
+                await response.WriteAsJsonAsync(data.Data.flowResponse);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("Error occured querying GraphQL: {error}", ex.Message);
+                response.StatusCode = HttpStatusCode.InternalServerError;
                 return response;
             }
 

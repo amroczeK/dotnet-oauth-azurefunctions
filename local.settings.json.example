@@ -3,6 +3,14 @@
   "Values": {
     "AzureWebJobsStorage": "",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
-    "Password": ""
+    "Config:AccountId":"",
+    "Config:ClientId":"",
+    "Config:TenantId":"",
+    "Config:Scope":"",
+    "Config:Origin":"",
+    "Config:AadUsername":"",
+    "Config:GraphQlUrl":"",
+    "Secrets:Password": "",
+    "Secrets:ApiKey": ""
   }
 }

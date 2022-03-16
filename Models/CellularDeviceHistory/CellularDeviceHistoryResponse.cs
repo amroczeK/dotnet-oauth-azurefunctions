@@ -1,46 +1,49 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Solution.RuralWater.AZF.Models.CellularDeviceHistory
 {
+    /// <summary>
+    /// Object with properties for the response returned from Egress API for Cellular Device History XDS.
+    /// </summary>
     public class CellularDeviceHistoryResponse
     {
-        [JsonProperty("data_source_id")]
+        [JsonPropertyName("data_source_id")]
         public int DataSourceId { get; set; }
 
-        [JsonProperty("device_id")]
+        [JsonPropertyName("device_id")]
         public string DeviceId { get; set; }
 
-        [JsonProperty("site_id")]
+        [JsonPropertyName("site_id")]
         public string SiteId { get; set; }
 
-        [JsonProperty("serial_number")]
+        [JsonPropertyName("serial_number")]
         public string SerialNumber { get; set; }
 
-        [JsonProperty("ts")]
+        [JsonPropertyName("ts")]
         public string Ts { get; set; }
 
-        [JsonProperty("last_updated")]
+        [JsonPropertyName("last_updated")]
         public string LastUpdated { get; set; }
 
-        [JsonProperty("latitude")]
+        [JsonPropertyName("latitude")]
         public double Latitude { get; set; }
 
-        [JsonProperty("longitude")]
+        [JsonPropertyName("longitude")]
         public double Longitude { get; set; }
 
-        [JsonProperty("altitude")]
+        [JsonPropertyName("altitude")]
         public double? Altitude { get; set; }
 
-        [JsonProperty("accuracy")]
+        [JsonPropertyName("accuracy")]
         public double? Accuracy { get; set; }
 
-        [JsonProperty("iccid")]
+        [JsonPropertyName("iccid")]
         public string IccId { get; set; }
 
-        [JsonProperty("imsi")]
+        [JsonPropertyName("imsi")]
         public string Imsi { get; set; }
 
-        [JsonProperty("imei")]
+        [JsonPropertyName("imei")]
         public string Imei { get; set; }
     }
 }

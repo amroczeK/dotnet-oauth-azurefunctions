@@ -1,53 +1,45 @@
-using System;
-using System.Collections.Generic;
-using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Solution.RuralWater.AZF.Models.Flow
 {
     public class FlowParams
     {
-        [JsonProperty("accountId", Required = Required.Always)]
+        [JsonPropertyName("accountId")]
         public string accountId { get; set; }
 
-        [JsonProperty("tz")]
+        [JsonPropertyName("tz")]
         public string tz { get; set; } = "UTC";
 
-        [JsonProperty("deviceId")]
-        public string? deviceId { get; set; }
+        [JsonPropertyName("deviceId")]
+        public string deviceId { get; set; } = "";
 
-        [JsonProperty("siteId")]
-        public string? siteId { get; set; }
+        [JsonPropertyName("siteId")]
+        public string siteId { get; set; } = "";
 
-        [JsonProperty("ts")]
-        public string? ts { get; set; }
+        [JsonPropertyName("ts")]
+        public string ts { get; set; } = "";
 
-        [JsonProperty("time")]
-        public string? time { get; set; }
+        [JsonPropertyName("time")]
+        public string time { get; set; } = "";
 
-        [JsonProperty("page")]
-        public string? page { get; set; }
+        [JsonPropertyName("page")]
+        public string page { get; set; } = "";
 
-        [JsonProperty("perPage")]
-        public string? perPage { get; set; }
+        [JsonPropertyName("perPage")]
+        public string perPage { get; set; } = "";
 
-        [JsonProperty("sortBy")]
-        public string? sortBy { get; set; }
+        [JsonPropertyName("sortBy")]
+        public string sortBy { get; set; } = "";
 
-        [JsonProperty("sort")]
-        public string? sort { get; set; }
+        [JsonPropertyName("sort")]
+        public string sort { get; set; } = "";
 
-        [JsonProperty("combineWith")]
-        public string? combineWith { get; set; }
+        [JsonPropertyName("combineWith")]
+        public string combineWith { get; set; } = "";
 
         public FlowParams()
         {
 
-        }
-
-        public FlowParams(Dictionary<string, StringValues> queryParams)
-        {
-            var json = JsonConvert.SerializeObject(queryParams, Newtonsoft.Json.Formatting.Indented);
         }
     }
 }

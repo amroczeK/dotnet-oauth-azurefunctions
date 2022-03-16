@@ -3,113 +3,73 @@ using System.Security;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client;
+using Solution.RuralWater.AZF.Options;
 using Solution.RuralWater.AZF.Models;
+using System;
+using System.Threading;
 
 namespace Solution.RuralWater.AZF.Helpers
 {
 
     public interface IAuthenticationHelper
     {
-        Task<TokenResponse> GetAccessToken(string password);
-        //Task GetAzureFunctionKey();
+        Task<TokenResponse> GetAccessToken(CancellationToken cancellationToken);
     }
 
     public class AuthenticationHelper : IAuthenticationHelper
     {
-        //private readonly IPublicClientApplication _publicClientApplication;
+        private readonly AuthenticationOptions _authOptions;
+        private readonly Secrets _secrets;
         private readonly ILogger _logger;
 
-        public AuthenticationHelper(ILogger logger)
+        public AuthenticationHelper(ILogger logger, AuthenticationOptions authOptions, Secrets secrets)
         {
-            //_publicClientApplication = publicClientApplication;
             _logger = logger;
+            _authOptions = authOptions ?? throw new ArgumentException(nameof(authOptions));
+            _secrets = secrets ?? throw new ArgumentException(nameof(secrets));
         }
 
-        public async Task<TokenResponse> GetAccessToken(string password)
+        /// <summary>
+        /// Retrieve access token for app registration using specified Client ID, Username and Password for Password Credentials Flow.
+        /// </summary>
+        /// <returns>TokenReponse object</returns>
+        public async Task<TokenResponse> GetAccessToken(CancellationToken cancellationToken = default)
         {
-            var authorityUri = $"https://login.microsoftonline.com/{Constants.TenantId}/oauth2/v2.0/token";
-            string[] scopes = new string[] { Constants.Scope };
-
-            var app = PublicClientApplicationBuilder.Create(Constants.ClientId)
-                        .WithAuthority(authorityUri)
+            _logger.LogInformation("Getting Access Token");
+            var response = new TokenResponse();
+            try
+            {
+                var authorityUri = $"https://login.microsoftonline.com/{_authOptions.TenantId}";
+                string[] scopes = new string[] { _authOptions.Scope };
+                var app = PublicClientApplicationBuilder.Create(_authOptions.ClientId)
+                        .WithAuthority(new Uri(authorityUri))
                         .Build();
-            var accounts = await app.GetAccountsAsync();
+                var accounts = await app.GetAccountsAsync();
+                AuthenticationResult result = null;
 
-            AuthenticationResult result = null;
-            string errorMessage = "";
-            if (accounts.Any())
-            {
-                result = await app.AcquireTokenSilent(scopes, accounts.FirstOrDefault())
-                                  .ExecuteAsync();
-            }
-            else
-            {
-                try
+                if (accounts.Any())
+                {
+                    result = await app.AcquireTokenSilent(scopes, accounts.FirstOrDefault())
+                                      .ExecuteAsync();
+                }
+                else
                 {
                     var securePassword = new SecureString();
-                    foreach (char c in password)        // you should fetch the password
+                    foreach (char c in _secrets.Password)        // you should fetch the password
                         securePassword.AppendChar(c);  // keystroke by keystroke
 
-                    result = await app.AcquireTokenByUsernamePassword(scopes, Constants.Username, securePassword)
+                    result = await app.AcquireTokenByUsernamePassword(scopes, _authOptions.AadUsername, securePassword)
                                        .ExecuteAsync();
-                }
-                catch (MsalException ex)
-                {
-                    _logger.LogError(ex.Message);
-                    errorMessage = ex.Message;
+                    response.AccessToken = result.AccessToken;
+                    return response;
                 }
             }
-
-            var response = new TokenResponse
+            catch (Exception ex)
             {
-                AccessToken = result.AccessToken,
-                Exception = errorMessage
-            };
+                _logger.LogError(ex.Message, "Unhandled exception inside AuthenticationHelper.");
+                response.Exception = ex.Message;
+            }
             return response;
         }
-
-        // public async Task GetAzureFunctionKey()
-        // {
-        //     string clientId = "client id";
-        //     string clientSecret = "secret key";
-        //     string tenantId = "tenant id";
-        //     var functionName = "functionName";
-        //     var webFunctionAppName = "functionApp name";
-        //     string resourceGroup = "resource group name";
-        //     //var credentials = new AzureCredentials(new ServicePrincipalLoginInformation { ClientId = clientId, ClientSecret = secret }, tenant, AzureEnvironment.AzureGlobalCloud);
-        //     var credentials = SdkContext.AzureCredentialsFactory
-        //         .FromServicePrincipal(clientId,
-        //             clientSecret,
-        //             tenantId,
-        //             AzureEnvironment.AzureGlobalCloud);
-        //     // var azure = Azure.Configure()
-        //     //          .Authenticate(credentials)
-        //     //          .WithDefaultSubscription();
-        //     var azure = Microsoft.Azure.Management.Fluent.Azure
-        //                 .Configure()
-        //                 .Authenticate(credentials)
-        //                 .WithDefaultSubscription();
-
-        //     var webFunctionApp = azure.AppServices.FunctionApps.GetByResourceGroup(resourceGroup, webFunctionAppName);
-        //     var ftpUsername = webFunctionApp.GetPublishingProfile().FtpUsername;
-        //     var username = ftpUsername.Split('\\').ToList()[1];
-        //     var password = webFunctionApp.GetPublishingProfile().FtpPassword;
-        //     var base64Auth = Convert.ToBase64String(Encoding.Default.GetBytes($"{username}:{password}"));
-        //     var apiUrl = new Uri($"https://{webFunctionAppName}.scm.azurewebsites.net/api");
-        //     var siteUrl = new Uri($"https://{webFunctionAppName}.azurewebsites.net");
-        //     string JWT;
-        //     using (var client = new HttpClient())
-        //     {
-        //         client.DefaultRequestHeaders.Add("Authorization", $"Basic {base64Auth}");
-
-        //         var result = client.GetAsync($"{apiUrl}/functions/admin/token").Result;
-        //         JWT = result.Content.ReadAsStringAsync().Result.Trim('"'); //get  JWT for call funtion key
-        //     }
-        //     using (var client = new HttpClient())
-        //     {
-        //         client.DefaultRequestHeaders.Add("Authorization", "Bearer " + JWT);
-        //         var key = client.GetAsync($"{siteUrl}/admin/functions/{functionName}/keys").Result.Content.ReadAsStringAsync().Result;
-        //     }
-        // }
     }
 }

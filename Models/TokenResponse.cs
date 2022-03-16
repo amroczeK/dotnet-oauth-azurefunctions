@@ -1,10 +1,18 @@
-using Newtonsoft.Json;
-
 namespace Solution.RuralWater.AZF.Models
 {
+    /// <summary>
+    /// Object detailing Access Token generated using Authentication Helper and any exceptions caught.
+    /// </summary>
     public class TokenResponse
     {
-        public string AccessToken { get; set; } = null;
-        public string Exception { get; set; } = null;
+        /// <summary>
+        /// Access token used in GraphQL request, generated using Password Credentials flow.
+        /// </summary>
+        public string AccessToken { get; set; }
+
+        /// <summary>
+        /// Exception message that gets passed to parent.
+        /// </summary>
+        public string Exception { get; set; }
     }
 }
