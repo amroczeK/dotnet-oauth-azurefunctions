@@ -30,7 +30,7 @@ namespace Solution.RuralWater.AZF
                         configuration.GetSection("AuthOptions").Bind(settings);
                     }).Validate(config =>
                     {
-                        var dictionary = QueryParams.ToDictionary<string>(config);
+                        var dictionary = QueryParamHelpers.ToDictionary<string>(config);
                         foreach(var item in dictionary){
                             if(string.IsNullOrEmpty(item.Value)){
                                 return false;

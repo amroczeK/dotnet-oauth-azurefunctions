@@ -15,7 +15,7 @@ namespace Solution.RuralWater.AZF.Helpers
     /// Helper functions for validating query parameters and manipulating Dictionaries.
     /// </summary>
     /// <returns>TokenReponse object</returns>
-    public static class QueryParams
+    public static class QueryParamHelpers
     {
         public static Dictionary<string, TValue> ToDictionary<TValue>(object obj)
         {
