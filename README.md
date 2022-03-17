@@ -14,3 +14,6 @@
 6. Navigate to App keys and create a new host key for the Azure Function, host keys apply to all HTTP functions.
 7. These options and secrets will get injected into the application during runtime.
 8. (OPTIONAL) If you don't want to use AuthorizationLevel.Function, you can add the created Host key's value to configuration with key name 'Secrets:ApiKey' and incoming requests can use 'Authorization' header with key 'ApiKey', and utilize the AuthorizationHelper.ValidateApiKey method to authorize the request.
+
+### Postman collection
+Refer to: https://dev.azure.com/telstradx/Data%20Exchange/_git/Dh.Postman?path=/Solutions/Condamine/Azure%20Functions
