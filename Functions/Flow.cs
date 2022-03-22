@@ -12,9 +12,6 @@ using Solution.RuralWater.AZF.Helpers;
 using Solution.RuralWater.AZF.Models.Flow;
 using Microsoft.Extensions.Options;
 using Solution.RuralWater.AZF.Services;
-using System.Collections.Generic;
-using GraphQL.Client.Serializer.SystemTextJson;
-using System.Text.Json;
 
 namespace Solution.RuralWater.AZF.Functions
 {
@@ -23,12 +20,16 @@ namespace Solution.RuralWater.AZF.Functions
         private readonly AuthenticationOptions _authOptions;
         private readonly Secrets _secrets;
         private readonly IQueryService _queryService;
+        private readonly AuthenticationHelper _authenticationHelper;
+        private readonly AuthorizationHelper _authorizationHelper;
 
-        public Flow(IOptions<AuthenticationOptions> authOptions, IOptions<Secrets> secrets, IQueryService queryService)
+        public Flow(IOptions<AuthenticationOptions> authOptions, IOptions<Secrets> secrets, IQueryService queryService, AuthenticationHelper authenticationHelper, AuthorizationHelper authorizationHelper)
         {
             _authOptions = authOptions?.Value ?? throw new ArgumentException(nameof(authOptions));
             _secrets = secrets?.Value ?? throw new ArgumentException(nameof(secrets));
             _queryService = queryService;
+            _authenticationHelper = authenticationHelper;
+            _authorizationHelper = authorizationHelper;
         }
 
         [Function("GetFlowRdmw")]
@@ -41,8 +42,7 @@ namespace Solution.RuralWater.AZF.Functions
             var response = req.CreateResponse(HttpStatusCode.OK);
 
             // Validate Authorization header and ApiKey
-            AuthorizationHelper authorizationHelper = new AuthorizationHelper(logger, _secrets);
-            var validate = authorizationHelper.ValidateApiKey(req.Headers);
+            var validate = _authorizationHelper.ValidateApiKey(req.Headers, logger);
 
             if (!validate.Valid)
             {
@@ -62,8 +62,7 @@ namespace Solution.RuralWater.AZF.Functions
             dynamic dynamicQueryParams = QueryParamHelpers.DictionaryToDynamic(queryDictionary);
 
             // Get Bearer token using Password Credentials flow to be able to query GraphQL layer
-            var authenticationHelper = new AuthenticationHelper(logger, _authOptions, _secrets);
-            var result = await authenticationHelper.GetAccessToken();
+            var result = await _authenticationHelper.GetAccessToken(logger);
 
             if (result.AccessToken == null)
             {
@@ -89,7 +88,7 @@ namespace Solution.RuralWater.AZF.Functions
             }
             catch (Exception ex)
             {
-                logger.LogError("Error occured querying GraphQL: {error}", ex.Message);
+                logger.LogError("Error occurred querying GraphQL: {error}", ex.Message);
                 response.StatusCode = HttpStatusCode.InternalServerError;
                 return response;
             }
@@ -112,8 +111,7 @@ namespace Solution.RuralWater.AZF.Functions
             reqParams.accountId = _authOptions.AccountId;
 
             // Get Bearer token using Password Credentials flow to be able to query GraphQL layer
-            var authenticationHelper = new AuthenticationHelper(logger, _authOptions, _secrets);
-            var result = await authenticationHelper.GetAccessToken();
+            var result = await _authenticationHelper.GetAccessToken(logger);
 
             if (result.AccessToken == null)
             {
@@ -139,7 +137,7 @@ namespace Solution.RuralWater.AZF.Functions
             }
             catch (Exception ex)
             {
-                logger.LogError("Error occured querying GraphQL: {error}", ex.Message);
+                logger.LogError("Error occurred querying GraphQL: {error}", ex.Message);
                 response.StatusCode = HttpStatusCode.InternalServerError;
                 return response;
             }

@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Solution.RuralWater.AZF.Models;
 using Solution.RuralWater.AZF.Options;
 
@@ -10,7 +11,7 @@ namespace Solution.RuralWater.AZF.Helpers
 {
     public interface IAuthorizationHelper
     {
-        AuthorizationResponse ValidateApiKey(HttpHeadersCollection headers);
+        AuthorizationResponse ValidateApiKey(HttpHeadersCollection headers, ILogger logger);
     }
 
     public class AuthorizationHelper : IAuthorizationHelper
@@ -21,49 +22,50 @@ namespace Solution.RuralWater.AZF.Helpers
         public const string ApiKeyHeaderName = "Authorization";
         private const string AuthorizationType = "ApiKey";
         private readonly Secrets _secrets;
-        private readonly ILogger _logger;
 
-        public AuthorizationHelper(ILogger logger, Secrets secrets)
+        public AuthorizationHelper(IOptions<Secrets> secrets)
         {
-            _logger = logger;
-            _secrets = secrets ?? throw new ArgumentException(nameof(secrets));
+            _secrets = secrets?.Value ?? throw new ArgumentException(nameof(secrets));
         }
 
         /// <summary>
         /// Parses request headers for Authorization header and ApiKey key and validates the value.
         /// </summary>
         /// <returns>AuthorizationResponse object</returns>
-        public AuthorizationResponse ValidateApiKey(HttpHeadersCollection headers)
+        public AuthorizationResponse ValidateApiKey(HttpHeadersCollection headers, ILogger logger)
         {
             var response = new AuthorizationResponse();
-            _logger.LogInformation("Validating Authorization header and ApiKey.");
+            logger.LogInformation("Validating Authorization header and ApiKey.");
 
             if (headers.TryGetValues(ApiKeyHeaderName, out var output))
             {
                 string[] authHeaderParts = output.FirstOrDefault().Split(" ");
                 if (authHeaderParts.Length != 2 || authHeaderParts[0] != AuthorizationType)
                 {
-                    _logger.LogError(InvalidAuthorizationHeaderError);
+                    logger.LogError(InvalidAuthorizationHeaderError);
                     response.Message = InvalidAuthorizationHeaderError;
                     response.StatusCode = StatusCodes.Status401Unauthorized;
                     response.Valid = false;
                 }
                 else if (!authHeaderParts[1].Equals(_secrets.ApiKey))
                 {
-                    _logger.LogError(InvalidApiKeyError);
+                    logger.LogError(InvalidApiKeyError);
                     response.Message = InvalidApiKeyError;
                     response.StatusCode = StatusCodes.Status401Unauthorized;
                     response.Valid = false;
+                } else {
+                    logger.LogInformation("Request is authorized.");
+                    response.StatusCode = StatusCodes.Status200OK;
+                    response.Valid = true;
                 }
             }
             else
             {
-                _logger.LogError(MissingApiKeyHeaderError);
+                logger.LogError(MissingApiKeyHeaderError);
                 response.Message = MissingApiKeyHeaderError;
                 response.StatusCode = StatusCodes.Status401Unauthorized;
                 response.Valid = false;
             }
-            response.Valid = true;
             return response;
         }
     }

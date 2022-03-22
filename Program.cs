@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Solution.RuralWater.AZF.Options;
 using Solution.RuralWater.AZF.Services;
 using Solution.RuralWater.AZF.Helpers;
+using Microsoft.Extensions.Options;
 
 namespace Solution.RuralWater.AZF
 {
@@ -39,6 +40,8 @@ namespace Solution.RuralWater.AZF
                         return true;
                     }, "Authentication Options configuration must not have any null or empty values.");
                     services.AddScoped<IQueryService, QueryService>();
+                    services.AddSingleton<AuthenticationHelper>();
+                    services.AddSingleton<AuthorizationHelper>();
                 })
                 .Build();
 

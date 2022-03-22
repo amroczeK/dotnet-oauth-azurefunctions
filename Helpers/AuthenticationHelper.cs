@@ -7,35 +7,34 @@ using Solution.RuralWater.AZF.Options;
 using Solution.RuralWater.AZF.Models;
 using System;
 using System.Threading;
+using Microsoft.Extensions.Options;
 
 namespace Solution.RuralWater.AZF.Helpers
 {
 
     public interface IAuthenticationHelper
     {
-        Task<TokenResponse> GetAccessToken(CancellationToken cancellationToken);
+        Task<TokenResponse> GetAccessToken(ILogger logger, CancellationToken cancellationToken);
     }
 
     public class AuthenticationHelper : IAuthenticationHelper
     {
         private readonly AuthenticationOptions _authOptions;
         private readonly Secrets _secrets;
-        private readonly ILogger _logger;
 
-        public AuthenticationHelper(ILogger logger, AuthenticationOptions authOptions, Secrets secrets)
+        public AuthenticationHelper(IOptions<AuthenticationOptions> authOptions, IOptions<Secrets> secrets)
         {
-            _logger = logger;
-            _authOptions = authOptions ?? throw new ArgumentException(nameof(authOptions));
-            _secrets = secrets ?? throw new ArgumentException(nameof(secrets));
+            _authOptions = authOptions?.Value ?? throw new ArgumentException(nameof(authOptions));
+            _secrets = secrets?.Value ?? throw new ArgumentException(nameof(secrets));
         }
 
         /// <summary>
         /// Retrieve access token for app registration using specified Client ID, Username and Password for Password Credentials Flow.
         /// </summary>
         /// <returns>TokenReponse object</returns>
-        public async Task<TokenResponse> GetAccessToken(CancellationToken cancellationToken = default)
+        public async Task<TokenResponse> GetAccessToken(ILogger logger, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("Getting Access Token");
+            logger.LogInformation("Getting Access Token");
             var response = new TokenResponse();
             try
             {
@@ -66,7 +65,7 @@ namespace Solution.RuralWater.AZF.Helpers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message, "Unhandled exception inside AuthenticationHelper.");
+                logger.LogError(ex.Message, "Unhandled exception inside AuthenticationHelper.");
                 response.Exception = ex.Message;
             }
             return response;
