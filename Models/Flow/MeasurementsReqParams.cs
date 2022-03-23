@@ -45,6 +45,13 @@ namespace Solution.RuralWater.AZF.Models.Flow
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int? limit { get; set; }
 
+        /// <summary>
+        /// Check if value is comma separated/delimited and dynamically return string or string[] conditionally.
+        /// </summary>
+        /// <returns>String or String[]</returns>
+        /// <remarks>
+        /// Customers API driver sends list of device/site identifiers as a comma delimited string in requests query params.
+        /// </remarks>
         private dynamic CommaDelimitedCheck(string value)
         {
             string[] array = value.Replace(" ", String.Empty).Split(',');
