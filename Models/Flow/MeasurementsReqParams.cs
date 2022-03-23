@@ -11,21 +11,27 @@ namespace Solution.RuralWater.AZF.Models.Flow
         public string tz { get; set; } = "UTC";
         
         [JsonPropertyName("StartTime")]
-        public string start_time { get; set; } = "";
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string start_time { get; set; }
 
         [JsonPropertyName("EndTime")]
-        public string end_time { get; set; } = "";
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string end_time { get; set; }
 
         [JsonPropertyName("SiteId")]
-        public string site_id { get; set; } = "";
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string site_id { get; set; }
 
         [JsonPropertyName("DeviceId")]
-        public string device_id { get; set; } = "";
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string device_id { get; set; }
 
         [JsonPropertyName("Offset")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int? offset { get; set; }
 
         [JsonPropertyName("Limit")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int? limit { get; set; }
     }
 }
