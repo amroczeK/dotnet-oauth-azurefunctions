@@ -8,28 +8,39 @@ namespace Solution.RuralWater.AZF.Models.Flow
     {
         private string[] _deviceId;
         private string[] _siteId;
+        private int? _limit;
 
+        /// <summary>
+        /// Customer Account Id
+        /// </summary>
         [JsonPropertyName("accountId")]
         public string accountId { get; set; }
 
+        /// <summary>
+        /// Timezone. Default value : UTC.
+        /// </summary>
         [JsonPropertyName("tz")]
         public string tz { get; set; } = "UTC";
 
         /// <summary>
-        /// Array of Site Identifiers.
-        /// <p>The maximum count of site id in one request is 10.</p>
+        /// DateTime string e.g. 2022-03-15T10:15:01.000Z.
         /// </summary>
         /// <remarks>
-        /// Client REST API /GET request uses 'site_id' query param, a comma delimited string of ids
-        /// and the GraphQL resolver expects an array of strings for one or more site id's with parameter key
-        /// denoted as SiteId in the JsonPropertyName below.
-        /// <p>The maximum count of site id in one request is 10.</p>
+        /// Client REST API /GET request uses 'start_time' query param, App Api GraphQL layer resolver expects 'time_min' to parse underscore
+        /// and converts to dot notation Time.Min expected by Self Generating Egress API in re-constructed request by App Api.
         /// </remarks>
-        [JsonPropertyName("StartTime")]
+        [JsonPropertyName("time_min")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string start_time { get; set; }
 
-        [JsonPropertyName("EndTime")]
+        /// <summary>
+        /// DateTime string e.g. 2022-03-15T10:15:01.000Z.
+        /// </summary>
+        /// <remarks>
+        /// Client REST API /GET request uses 'end_time' query param, App Api GraphQL layer resolver expects 'time_max' to parse underscore
+        /// and converts to dot notation Time.Max expected by Self Generating Egress API in re-constructed request by App Api.
+        /// </remarks>
+        [JsonPropertyName("time_max")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string end_time { get; set; }
 
@@ -39,14 +50,14 @@ namespace Solution.RuralWater.AZF.Models.Flow
         /// </summary>
         /// <remarks>
         /// Client REST API /GET request uses 'site_id' query param, a comma delimited string of ids
-        /// and the GraphQL resolver expects an array of strings for one or more site id's with parameter key
+        /// and the App Api GraphQL layer resolver expects an array of strings for one or more site id's with parameter key
         /// denoted as SiteId in the JsonPropertyName below.
         /// </remarks>
         [JsonPropertyName("SiteId")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public dynamic site_id {
             get { return _siteId; }
-            set { _siteId = QueryParamHelpers.ConvertCommaDelimitedString(value, "SiteId", 10); }
+            set { _siteId = QueryParamHelpers.ConvertCommaDelimitedString(value, "site_id", 10); }
         }
 
         /// <summary>
@@ -54,7 +65,7 @@ namespace Solution.RuralWater.AZF.Models.Flow
         /// </summary>
         /// <remarks>
         /// Client REST API /GET request uses 'device_id' query param, a comma delimited string of ids
-        /// and the GraphQL resolver expects an array of strings for one or more device id's with parameter key
+        /// and the App Api GraphQL resolver expects an array of strings for one or more device id's with parameter key
         /// denoted as DeviceId in the JsonPropertyName below.
         /// </remarks>
         [JsonPropertyName("DeviceId")]
@@ -62,15 +73,25 @@ namespace Solution.RuralWater.AZF.Models.Flow
         public dynamic device_id
         {
             get { return _deviceId; }
-            set { _deviceId = QueryParamHelpers.ConvertCommaDelimitedString(value, "DeviceId", 10); }
+            set { _deviceId = QueryParamHelpers.ConvertCommaDelimitedString(value, "device_id", 10); }
         }
 
+        /// <summary>
+        /// The number of devices to skip from the result set. Default value : 0
+        /// </summary>
         [JsonPropertyName("Offset")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int? offset { get; set; }
 
+        /// <summary>
+        /// The maximum number of devices to return. Default value : 1000.
+        /// </summary>
         [JsonPropertyName("Limit")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public int? limit { get; set; }
+        public dynamic limit
+        {
+            get { return _limit; }
+            set { _limit = QueryParamHelpers.ValidateLimit(value, "limit", 1000); }
+        }
     }
 }

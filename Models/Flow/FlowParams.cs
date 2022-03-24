@@ -4,9 +4,15 @@ namespace Solution.RuralWater.AZF.Models.Flow
 {
     public class FlowParams
     {
+        /// <summary>
+        /// Customer Account Id
+        /// </summary>
         [JsonPropertyName("accountId")]
         public string accountId { get; set; }
 
+        /// <summary>
+        /// Point in time the data hub received the record
+        /// </summary>
         [JsonPropertyName("tz")]
         public string tz { get; set; } = "UTC";
 

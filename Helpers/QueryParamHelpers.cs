@@ -114,5 +114,16 @@ namespace Solution.RuralWater.AZF.Helpers
                                       propertyName);
             return array;
         }
+
+        /// <summary>
+        /// Validate query param 'limit' from client doesn't exceed value of 1000.
+        /// </summary>
+        public static int? ValidateLimit(string value, string propertyName, int limit)
+        {
+            int paramValue = Int32.Parse(value);
+            if (paramValue > limit) throw new ArgumentException(String.Format("Exceeded maximum limit of devices to return. Max is {0}.", limit),
+                                      propertyName);
+            return paramValue;
+        }
     }
 }
