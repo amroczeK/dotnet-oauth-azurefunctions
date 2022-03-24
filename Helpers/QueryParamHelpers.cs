@@ -107,9 +107,11 @@ namespace Solution.RuralWater.AZF.Helpers
         /// <remarks>
         /// Customers API driver sends list of device/site identifiers as a comma delimited string in requests query params.
         /// </remarks>
-        public static string[] ConvertCommaDelimitedString(string value)
+        public static string[] ConvertCommaDelimitedString(string value, string propertyName, int count)
         {
             string[] array = value.Replace(" ", String.Empty).Split(',');
+            if (array.Length > count - 1) throw new ArgumentException(String.Format("Exceeded maximum number of allowed values. Max is {0}.", count),
+                                      propertyName);
             return array;
         }
     }

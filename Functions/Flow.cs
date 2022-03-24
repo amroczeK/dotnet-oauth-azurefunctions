@@ -107,8 +107,17 @@ namespace Solution.RuralWater.AZF.Functions
             // Parse query parameters
             var queryDictionary = QueryHelpers.ParseQuery(req.Url.Query);
 
-            var reqParams = QueryParamHelpers.ConvertDictionaryTo<MeasurementsReqParams>(queryDictionary);
-            reqParams.accountId = _authOptions.AccountId;
+            var reqParams = new MeasurementsReqParams();
+            try
+            {
+                reqParams = QueryParamHelpers.ConvertDictionaryTo<MeasurementsReqParams>(queryDictionary);
+                reqParams.accountId = _authOptions.AccountId;
+            } catch (Exception ex) {
+                logger.LogError(ex.InnerException.Message);
+                response.StatusCode = HttpStatusCode.BadRequest;
+                await response.WriteStringAsync(ex.InnerException.Message);
+                return response;
+            }
 
             // Get Bearer token using Password Credentials flow to be able to query GraphQL layer
             var result = await _authenticationHelper.GetAccessToken(logger);
