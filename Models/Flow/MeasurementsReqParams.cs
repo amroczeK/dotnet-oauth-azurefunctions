@@ -26,10 +26,10 @@ namespace Solution.RuralWater.AZF.Models.Flow
         /// DateTime string e.g. 2022-03-15T10:15:01.000Z.
         /// </summary>
         /// <remarks>
-        /// Client REST API /GET request uses 'start_time' query param, App Api GraphQL layer resolver expects 'time_min' to parse underscore
+        /// Client REST API /GET request uses 'start_time' query param, App Api GraphQL layer resolver expects 'Time_Min' to parse underscore
         /// and converts to dot notation Time.Min expected by Self Generating Egress API in re-constructed request by App Api.
         /// </remarks>
-        [JsonPropertyName("time_min")]
+        [JsonPropertyName("Time_Min")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string start_time { get; set; }
 
@@ -37,10 +37,10 @@ namespace Solution.RuralWater.AZF.Models.Flow
         /// DateTime string e.g. 2022-03-15T10:15:01.000Z.
         /// </summary>
         /// <remarks>
-        /// Client REST API /GET request uses 'end_time' query param, App Api GraphQL layer resolver expects 'time_max' to parse underscore
+        /// Client REST API /GET request uses 'end_time' query param, App Api GraphQL layer resolver expects 'Time_Max' to parse underscore
         /// and converts to dot notation Time.Max expected by Self Generating Egress API in re-constructed request by App Api.
         /// </remarks>
-        [JsonPropertyName("time_max")]
+        [JsonPropertyName("Time_Max")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string end_time { get; set; }
 
