@@ -17,13 +17,21 @@ namespace Solution.RuralWater.AZF.Helpers
     /// <returns>TokenReponse object</returns>
     public static class QueryParamHelpers
     {
+        /// <summary>
+        /// Serialize object to json string then deserialize to dictionary of specified type.
+        /// </summary>
+        /// <returns>Dictionary of type</returns>
         public static Dictionary<string, TValue> ToDictionary<TValue>(object obj)
         {
             var json = JsonConvert.SerializeObject(obj);
             var dictionary = JsonConvert.DeserializeObject<Dictionary<string, TValue>>(json);
             return dictionary;
         }
-        
+
+        /// <summary>
+        /// Performs reflection on dictionary of string values, converting to specified type.
+        /// </summary>
+        /// <returns>Object of specified type</returns>
         public static T ConvertDictionaryTo<T>(IDictionary<string, StringValues> dictionary) where T : new()
         {
             Type type = typeof(T);
@@ -71,6 +79,10 @@ namespace Solution.RuralWater.AZF.Helpers
             return result;
         }
 
+        /// <summary>
+        /// Convert dictionary to dynamic.
+        /// </summary>
+        /// <returns>Dynamic object</returns>
         public static dynamic DictionaryToDynamic(Dictionary<string, object> queryDictionary)
         {
             dynamic result = queryDictionary.Aggregate(new ExpandoObject() as IDictionary<string, Object>,
@@ -79,26 +91,26 @@ namespace Solution.RuralWater.AZF.Helpers
             return result;
         }
 
+        /// <summary>
+        /// Convert object to dictionary.
+        /// </summary>
+        /// <returns>Dictionary string object</returns>
         public static Dictionary<string, object> ConvertObjectToDictionary(object arg)
         {
             return arg.GetType().GetProperties().ToDictionary(property => property.Name, property => property.GetValue(arg));
         }
-        public static Dictionary<string, object> ConvertObjectToDictionary(MeasurementsReqParams arg)
+
+        /// <summary>
+        /// Converts comma delimited string of from query parameter to array of strings, expected by GraphQL resolver.
+        /// </summary>
+        /// <returns>String[]</returns>
+        /// <remarks>
+        /// Customers API driver sends list of device/site identifiers as a comma delimited string in requests query params.
+        /// </remarks>
+        public static string[] ConvertCommaDelimitedString(string value)
         {
-            return arg.GetType().GetProperties().ToDictionary(property => property.Name, property => property.GetValue(arg));
-        }
-
-        public static T ConvertDictionaryTo<T>(IDictionary<string, object> dictionary) where T : new()
-        {
-            Type type = typeof(T);
-            T ret = new T();
-
-            foreach (var keyValue in dictionary)
-            {
-                type.GetProperty(keyValue.Key).SetValue(ret, keyValue.Value, null);
-            }
-
-            return ret;
+            string[] array = value.Replace(" ", String.Empty).Split(',');
+            return array;
         }
     }
 }

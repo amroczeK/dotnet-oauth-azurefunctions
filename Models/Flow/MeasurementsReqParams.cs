@@ -1,15 +1,20 @@
+using System;
 using System.Text.Json.Serialization;
+using Solution.RuralWater.AZF.Helpers;
 
 namespace Solution.RuralWater.AZF.Models.Flow
 {
     public class MeasurementsReqParams
     {
+        private string[] _deviceId;
+        private string[] _siteId;
+
         [JsonPropertyName("accountId")]
         public string accountId { get; set; }
 
         [JsonPropertyName("tz")]
         public string tz { get; set; } = "UTC";
-        
+
         [JsonPropertyName("StartTime")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string start_time { get; set; }
@@ -20,11 +25,18 @@ namespace Solution.RuralWater.AZF.Models.Flow
 
         [JsonPropertyName("SiteId")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string site_id { get; set; }
+        public dynamic site_id {
+            get { return _siteId; }
+            set { _siteId = QueryParamHelpers.ConvertCommaDelimitedString(value); }
+        }
 
         [JsonPropertyName("DeviceId")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string device_id { get; set; }
+        public dynamic device_id
+        {
+            get { return _deviceId; }
+            set { _deviceId = QueryParamHelpers.ConvertCommaDelimitedString(value); }
+        }
 
         [JsonPropertyName("Offset")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
