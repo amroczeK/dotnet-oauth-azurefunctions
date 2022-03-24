@@ -6,8 +6,8 @@ namespace Solution.RuralWater.AZF.Models.Flow
 {
     public class MeasurementsReqParams
     {
-        private dynamic _deviceId;
-        private dynamic _siteId;
+        private string[] _deviceId;
+        private string[] _siteId;
 
         [JsonPropertyName("accountId")]
         public string accountId { get; set; }
@@ -27,7 +27,7 @@ namespace Solution.RuralWater.AZF.Models.Flow
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public dynamic site_id {
             get { return _siteId; }
-            set { _siteId = QueryParamHelpers.CommaDelimitedCheck(value); }
+            set { _siteId = QueryParamHelpers.ConvertCommaDelimitedString(value); }
         }
 
         [JsonPropertyName("DeviceId")]
@@ -35,7 +35,7 @@ namespace Solution.RuralWater.AZF.Models.Flow
         public dynamic device_id
         {
             get { return _deviceId; }
-            set { _deviceId = QueryParamHelpers.CommaDelimitedCheck(value); }
+            set { _deviceId = QueryParamHelpers.ConvertCommaDelimitedString(value); }
         }
 
         [JsonPropertyName("Offset")]

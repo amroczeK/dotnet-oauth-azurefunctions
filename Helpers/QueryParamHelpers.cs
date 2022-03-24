@@ -101,17 +101,16 @@ namespace Solution.RuralWater.AZF.Helpers
         }
 
         /// <summary>
-        /// Check if value is comma separated/delimited and dynamically return string or string[] conditionally.
+        /// Converts comma delimited string of from query parameter to array of strings, expected by GraphQL resolver.
         /// </summary>
-        /// <returns>String or String[]</returns>
+        /// <returns>String[]</returns>
         /// <remarks>
         /// Customers API driver sends list of device/site identifiers as a comma delimited string in requests query params.
         /// </remarks>
-        public static dynamic CommaDelimitedCheck(string value)
+        public static string[] ConvertCommaDelimitedString(string value)
         {
             string[] array = value.Replace(" ", String.Empty).Split(',');
-            if (array.Length > 1) return array;
-            return value;
+            return array;
         }
     }
 }
