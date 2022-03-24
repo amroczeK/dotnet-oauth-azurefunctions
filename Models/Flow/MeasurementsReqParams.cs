@@ -1,5 +1,6 @@
 using System;
 using System.Text.Json.Serialization;
+using Solution.RuralWater.AZF.Helpers;
 
 namespace Solution.RuralWater.AZF.Models.Flow
 {
@@ -26,7 +27,7 @@ namespace Solution.RuralWater.AZF.Models.Flow
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public dynamic site_id {
             get { return _siteId; }
-            set { _siteId = CommaDelimitedCheck(value); }
+            set { _siteId = QueryParamHelpers.CommaDelimitedCheck(value); }
         }
 
         [JsonPropertyName("DeviceId")]
@@ -34,7 +35,7 @@ namespace Solution.RuralWater.AZF.Models.Flow
         public dynamic device_id
         {
             get { return _deviceId; }
-            set { _deviceId = CommaDelimitedCheck(value); }
+            set { _deviceId = QueryParamHelpers.CommaDelimitedCheck(value); }
         }
 
         [JsonPropertyName("Offset")]
@@ -44,19 +45,5 @@ namespace Solution.RuralWater.AZF.Models.Flow
         [JsonPropertyName("Limit")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int? limit { get; set; }
-
-        /// <summary>
-        /// Check if value is comma separated/delimited and dynamically return string or string[] conditionally.
-        /// </summary>
-        /// <returns>String or String[]</returns>
-        /// <remarks>
-        /// Customers API driver sends list of device/site identifiers as a comma delimited string in requests query params.
-        /// </remarks>
-        private dynamic CommaDelimitedCheck(string value)
-        {
-            string[] array = value.Replace(" ", String.Empty).Split(',');
-            if (array.Length > 1) return array;
-            return value;
-        }
     }
 }
