@@ -12,6 +12,7 @@ using Solution.RuralWater.AZF.Helpers;
 using Solution.RuralWater.AZF.Models.CellularDeviceHistory;
 using Microsoft.Extensions.Options;
 using Solution.RuralWater.AZF.Services;
+using System.Text.Json;
 
 namespace Solution.RuralWater.AZF.Functions
 {
@@ -94,6 +95,7 @@ namespace Solution.RuralWater.AZF.Functions
             FunctionContext executionContext)
         {
             var logger = executionContext.GetLogger("Rdmw");
+            logger.LogInformation("Incoming request: {0}", req.Url.AbsoluteUri);
 
             var response = req.CreateResponse(HttpStatusCode.OK);
 
@@ -138,6 +140,7 @@ namespace Solution.RuralWater.AZF.Functions
                 const string version = "v1";
                 GraphQLRequest request = _queryService.CreateRequest(xdsName, xdsViewName, version, reqParams);
 
+                logger.LogInformation("Querying: {0}\n{1}\nEgress Data Params: {2}", _authOptions.GraphQlUrl, request.Values, JsonSerializer.Serialize<DevicesReqParams>(reqParams));
                 var data = await client.SendQueryAsync<CDHGraphQlResponse>(request);
 
                 await response.WriteAsJsonAsync(data.Data.cellularDeviceHistoryResponse);
