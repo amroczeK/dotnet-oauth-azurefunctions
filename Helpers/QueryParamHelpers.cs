@@ -102,6 +102,7 @@ namespace Solution.RuralWater.AZF.Helpers
 
         /// <summary>
         /// Converts comma delimited string of from query parameter to array of strings, expected by GraphQL resolver.
+        /// Array length cannot be greater than the count provided.
         /// </summary>
         /// <returns>String[]</returns>
         /// <remarks>
@@ -110,7 +111,7 @@ namespace Solution.RuralWater.AZF.Helpers
         public static string[] ConvertCommaDelimitedString(string value, string propertyName, int count)
         {
             string[] array = value.Replace(" ", String.Empty).Split(',');
-            if (array.Length > count - 1) throw new ArgumentException(String.Format("Exceeded maximum number of allowed values. Max is {0}.", count),
+            if (array.Length > count) throw new ArgumentException(String.Format("Exceeded maximum number of allowed values. Max is {0}.", count),
                                       propertyName);
             return array;
         }
