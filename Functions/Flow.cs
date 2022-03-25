@@ -107,7 +107,7 @@ namespace Solution.RuralWater.AZF.Functions
             // Parse query parameters
             var queryDictionary = QueryHelpers.ParseQuery(req.Url.Query);
 
-            var reqParams = new MeasurementsReqParams();
+            MeasurementsReqParams reqParams = null;
             try
             {
                 reqParams = QueryParamHelpers.ConvertDictionaryTo<MeasurementsReqParams>(queryDictionary);

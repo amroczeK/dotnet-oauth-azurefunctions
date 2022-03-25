@@ -110,7 +110,7 @@ namespace Solution.RuralWater.AZF.Functions
             // Parse query parameters
             var queryDictionary = QueryHelpers.ParseQuery(req.Url.Query);
 
-            var reqParams = new DevicesReqParams();
+            DevicesReqParams reqParams = null;
             try
             {
                 reqParams = QueryParamHelpers.ConvertDictionaryTo<DevicesReqParams>(queryDictionary);
