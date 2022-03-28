@@ -86,7 +86,11 @@ namespace Solution.RuralWater.AZF.Models.Flow
         /// <summary>
         /// The maximum number of devices to return. Default value : 1000.
         /// </summary>
-        [JsonPropertyName("Limit")]
+        /// <remarks>
+        /// Client REST API /GET request uses 'limit' query param, and the App Api GraphQL resolver expects the parameter key to be
+        /// denoted as PerPage in the JsonPropertyName below. Self generating egress api PerPage param defaults to 10.
+        /// </remarks>
+        [JsonPropertyName("PerPage")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public dynamic limit
         {
