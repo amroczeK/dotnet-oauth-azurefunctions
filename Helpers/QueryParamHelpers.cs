@@ -122,7 +122,7 @@ namespace Solution.RuralWater.AZF.Helpers
         public static int? ValidateLimit(string value, string propertyName, int limit)
         {
             int paramValue = Int32.Parse(value);
-            if (paramValue > limit) throw new ArgumentException(String.Format("Exceeded maximum limit of devices to return. Max is {0}.", limit),
+            if (paramValue < 1 | paramValue > limit) throw new ArgumentException(String.Format("Limit is out of bounds. Must be between 1 and {0}.", limit),
                                       propertyName);
             return paramValue;
         }

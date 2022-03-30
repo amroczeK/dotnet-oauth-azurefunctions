@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using System;
 
 namespace Solution.RuralWater.AZF.Models.CellularDeviceHistory
 {
@@ -7,6 +8,9 @@ namespace Solution.RuralWater.AZF.Models.CellularDeviceHistory
     /// </summary>
     public class CellularDeviceHistoryResponse
     {
+        private double? _Latitude;
+        private double? _Longitude;
+
         [JsonPropertyName("data_source_id")]
         public int DataSourceId { get; set; }
 
@@ -25,11 +29,49 @@ namespace Solution.RuralWater.AZF.Models.CellularDeviceHistory
         [JsonPropertyName("last_updated")]
         public string LastUpdated { get; set; }
 
+        /// <summary>
+        /// Latitude property
+        /// </summary>
+        /// <remarks>
+        /// Latitude data for some devices during transformation are being stored as (string) "NaN" in the Postgres table.
+        /// This is not deserializable by GraphQLHttpClient even when using JsonNumberHandling.AllowNamedFloatingPointLiterals
+        /// in JsonSerializerOptions. The setter below is the work around to convert "NaN" to null.
+        /// </remarks>
         [JsonPropertyName("latitude")]
-        public double Latitude { get; set; }
+        public double? Latitude { 
+            get {
+                return _Latitude;
+            } 
+            set {
+                if(Double.IsNaN(Double.Parse(value.ToString()))){
+                    _Latitude = null;
+                } else {
+                    _Latitude = value;
+                }
+            } 
+        }
 
+        /// <summary>
+        /// Longitude property
+        /// </summary>
+        /// <remarks>
+        /// Longitude data for some devices during transformation are being stored as (string) "NaN" in the Postgres table.
+        /// This is not deserializable by GraphQLHttpClient even when using JsonNumberHandling.AllowNamedFloatingPointLiterals
+        /// in JsonSerializerOptions. The setter below is the work around to convert "NaN" to null.
+        /// </remarks>
         [JsonPropertyName("longitude")]
-        public double Longitude { get; set; }
+        public double? Longitude { 
+            get {
+                return _Longitude;
+            } 
+            set {
+                if(Double.IsNaN(Double.Parse(value.ToString()))){
+                    _Longitude = null;
+                } else {
+                    _Longitude = value;
+                }
+            } 
+        }
 
         [JsonPropertyName("altitude")]
         public double? Altitude { get; set; }
