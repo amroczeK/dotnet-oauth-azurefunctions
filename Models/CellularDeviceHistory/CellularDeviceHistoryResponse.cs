@@ -8,8 +8,8 @@ namespace Solution.RuralWater.AZF.Models.CellularDeviceHistory
     /// </summary>
     public class CellularDeviceHistoryResponse
     {
-        private double? _Latitude;
-        private double? _Longitude;
+        private double? _latitude;
+        private double? _longitude;
 
         [JsonPropertyName("data_source_id")]
         public int DataSourceId { get; set; }
@@ -40,13 +40,13 @@ namespace Solution.RuralWater.AZF.Models.CellularDeviceHistory
         [JsonPropertyName("latitude")]
         public double? Latitude { 
             get {
-                return _Latitude;
+                return _latitude;
             } 
             set {
                 if(Double.IsNaN(Double.Parse(value.ToString()))){
-                    _Latitude = null;
+                    _latitude = null;
                 } else {
-                    _Latitude = value;
+                    _latitude = value;
                 }
             } 
         }
@@ -62,13 +62,13 @@ namespace Solution.RuralWater.AZF.Models.CellularDeviceHistory
         [JsonPropertyName("longitude")]
         public double? Longitude { 
             get {
-                return _Longitude;
+                return _longitude;
             } 
             set {
                 if(Double.IsNaN(Double.Parse(value.ToString()))){
-                    _Longitude = null;
+                    _longitude = null;
                 } else {
-                    _Longitude = value;
+                    _longitude = value;
                 }
             } 
         }
