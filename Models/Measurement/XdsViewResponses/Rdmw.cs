@@ -8,9 +8,6 @@ namespace Solution.RuralWater.AZF.Models.Measurement
     /// </summary>
     public class Rdmw
     {
-        [JsonPropertyName("data_source_id")]
-        public long DataSourceId { get; set; }
-
         [JsonPropertyName("device_id")]
         public string DeviceId { get; set; }
 
@@ -32,8 +29,8 @@ namespace Solution.RuralWater.AZF.Models.Measurement
         [JsonPropertyName("series")]
         public string Series { get; set; }
 
-        [JsonPropertyName("ratemlday")]
-        public double RateMlDay { get; set; }
+        [JsonPropertyName("value")]
+        public double value { get; set; }
 
         [JsonPropertyName("unit")]
         public string Unit { get; set; }
