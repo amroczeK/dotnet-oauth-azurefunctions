@@ -4,9 +4,9 @@ using System.Text.Json.Serialization;
 namespace Solution.RuralWater.AZF.Models.Flow
 {
     /// <summary>
-    /// Object with properties for the response returned from Egress API for Flow XDS.
+    /// Object with properties for the response returned from Egress API for Flow XDS on RDMW view.
     /// </summary>
-    public class FlowResponse
+    public class Rdmw
     {
         [JsonPropertyName("data_source_id")]
         public long DataSourceId { get; set; }

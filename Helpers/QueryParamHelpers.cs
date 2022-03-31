@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json;
 using Solution.RuralWater.AZF.Models.Flow;
 
 namespace Solution.RuralWater.AZF.Helpers
@@ -23,8 +23,8 @@ namespace Solution.RuralWater.AZF.Helpers
         /// <returns>Dictionary of type</returns>
         public static Dictionary<string, TValue> ToDictionary<TValue>(object obj)
         {
-            var json = JsonConvert.SerializeObject(obj);
-            var dictionary = JsonConvert.DeserializeObject<Dictionary<string, TValue>>(json);
+            var json = JsonSerializer.Serialize(obj);
+            var dictionary = JsonSerializer.Deserialize<Dictionary<string, TValue>>(json);
             return dictionary;
         }
 
@@ -122,7 +122,7 @@ namespace Solution.RuralWater.AZF.Helpers
         public static int? ValidateLimit(string value, string propertyName, int limit)
         {
             int paramValue = Int32.Parse(value);
-            if (paramValue > limit) throw new ArgumentException(String.Format("Exceeded maximum limit of devices to return. Max is {0}.", limit),
+            if (paramValue < 1 | paramValue > limit) throw new ArgumentException(String.Format("Limit is out of bounds. Must be between 1 and {0}.", limit),
                                       propertyName);
             return paramValue;
         }

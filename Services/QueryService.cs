@@ -1,6 +1,7 @@
 using System;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using GraphQL;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.SystemTextJson;
@@ -24,7 +25,11 @@ namespace Solution.RuralWater.AZF.Services
         /// <returns>GraphQLHttpClient object</returns>
         public GraphQLHttpClient CreateClient(string accessToken)
         {
-            var client = new GraphQLHttpClient(_authOptions.GraphQlUrl, new SystemTextJsonSerializer(new JsonSerializerOptions()));
+            var options = new JsonSerializerOptions
+            {
+                NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
+            };
+            var client = new GraphQLHttpClient(_authOptions.GraphQlUrl, new SystemTextJsonSerializer(options));
             client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Constants.AuthorizationType, accessToken);
             client.HttpClient.DefaultRequestHeaders.Add("Origin", _authOptions.Origin);
             return client;

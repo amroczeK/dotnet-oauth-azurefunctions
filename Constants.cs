@@ -14,6 +14,8 @@ namespace Solution.RuralWater.AZF
 
         public const string SiteHistoryXdsName = "site-history";
 
+        public const string MeasurementXdsName = "measurement";
+
         public const string Query = @"query EgressQuery(
                                     $egressDataXdsName: String!
                                     $egressDataViewName: String!

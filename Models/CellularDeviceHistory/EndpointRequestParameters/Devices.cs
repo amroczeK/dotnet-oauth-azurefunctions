@@ -3,12 +3,12 @@ using Solution.RuralWater.AZF.Helpers;
 
 namespace Solution.RuralWater.AZF.Models.CellularDeviceHistory
 {
-    public class DevicesReqParams
+    public class Devices
     {
         private string[] _deviceId;
         private string[] _siteId;
         private int? _limit;
-        
+
         /// <summary>
         /// Customer Account Id
         /// </summary>
@@ -64,7 +64,7 @@ namespace Solution.RuralWater.AZF.Models.CellularDeviceHistory
         /// <summary>
         /// The maximum number of devices to return. Default value : 1000.
         /// </summary>
-        [JsonPropertyName("Limit")]
+        [JsonPropertyName("PerPage")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public dynamic limit
         {
