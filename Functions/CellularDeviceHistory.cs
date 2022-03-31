@@ -13,6 +13,7 @@ using Solution.RuralWater.AZF.Models.CellularDeviceHistory;
 using Microsoft.Extensions.Options;
 using Solution.RuralWater.AZF.Services;
 using System.Text.Json;
+using Solution.RuralWater.AZF.Models;
 
 namespace Solution.RuralWater.AZF.Functions
 {
@@ -46,10 +47,10 @@ namespace Solution.RuralWater.AZF.Functions
             // Parse query parameters
             var queryDictionary = QueryHelpers.ParseQuery(req.Url.Query);
 
-            DevicesReqParams reqParams = null;
+            Devices reqParams = null;
             try
             {
-                reqParams = QueryParamHelpers.ConvertDictionaryTo<DevicesReqParams>(queryDictionary);
+                reqParams = QueryParamHelpers.ConvertDictionaryTo<Devices>(queryDictionary);
                 reqParams.accountId = _authOptions.AccountId;
             }
             catch (Exception ex)
@@ -78,10 +79,10 @@ namespace Solution.RuralWater.AZF.Functions
                 const string version = "v1";
                 GraphQLRequest request = _queryService.CreateRequest(xdsName, xdsViewName, version, reqParams);
 
-                logger.LogInformation("Querying: {0}\n{1}\nEgress Data Params: {2}", _authOptions.GraphQlUrl, request.Values, JsonSerializer.Serialize<DevicesReqParams>(reqParams));
-                var data = await client.SendQueryAsync<CDHGraphQlResponse>(request);
+                logger.LogInformation("Querying: {0}\n{1}\nEgress Data Params: {2}", _authOptions.GraphQlUrl, request.Values, JsonSerializer.Serialize<Devices>(reqParams));
+                var data = await client.SendQueryAsync<QueryResponse<Rdmw>>(request);
 
-                await response.WriteAsJsonAsync(data.Data.cellularDeviceHistoryResponse);
+                await response.WriteAsJsonAsync(data.Data.EgressData);
                 return response;
             }
             catch (Exception ex)

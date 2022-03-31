@@ -4,7 +4,7 @@ using Solution.RuralWater.AZF.Helpers;
 
 namespace Solution.RuralWater.AZF.Models.Flow
 {
-    public class MeasurementsReqParams
+    public class Measurements
     {
         private string[] _deviceId;
         private string[] _siteId;
@@ -55,7 +55,8 @@ namespace Solution.RuralWater.AZF.Models.Flow
         /// </remarks>
         [JsonPropertyName("SiteId")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public dynamic site_id {
+        public dynamic site_id
+        {
             get { return _siteId; }
             set { _siteId = QueryParamHelpers.ConvertCommaDelimitedString(value, "site_id", 10); }
         }

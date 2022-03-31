@@ -4,9 +4,9 @@ using System;
 namespace Solution.RuralWater.AZF.Models.CellularDeviceHistory
 {
     /// <summary>
-    /// Object with properties for the response returned from Egress API for Cellular Device History XDS.
+    /// Object with properties for the response returned from Egress API for Cellular Device History XDS on RDMW view.
     /// </summary>
-    public class CellularDeviceHistoryResponse
+    public class Rdmw
     {
         private double? _latitude;
         private double? _longitude;
@@ -38,17 +38,23 @@ namespace Solution.RuralWater.AZF.Models.CellularDeviceHistory
         /// in JsonSerializerOptions. The setter below is the work around to convert "NaN" to null.
         /// </remarks>
         [JsonPropertyName("latitude")]
-        public double? Latitude { 
-            get {
+        public double? Latitude
+        {
+            get
+            {
                 return _latitude;
-            } 
-            set {
-                if(Double.IsNaN(Double.Parse(value.ToString()))){
+            }
+            set
+            {
+                if (Double.IsNaN(Double.Parse(value.ToString())))
+                {
                     _latitude = null;
-                } else {
+                }
+                else
+                {
                     _latitude = value;
                 }
-            } 
+            }
         }
 
         /// <summary>
@@ -60,17 +66,23 @@ namespace Solution.RuralWater.AZF.Models.CellularDeviceHistory
         /// in JsonSerializerOptions. The setter below is the work around to convert "NaN" to null.
         /// </remarks>
         [JsonPropertyName("longitude")]
-        public double? Longitude { 
-            get {
+        public double? Longitude
+        {
+            get
+            {
                 return _longitude;
-            } 
-            set {
-                if(Double.IsNaN(Double.Parse(value.ToString()))){
+            }
+            set
+            {
+                if (Double.IsNaN(Double.Parse(value.ToString())))
+                {
                     _longitude = null;
-                } else {
+                }
+                else
+                {
                     _longitude = value;
                 }
-            } 
+            }
         }
 
         [JsonPropertyName("altitude")]
