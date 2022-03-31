@@ -34,12 +34,12 @@ namespace Solution.RuralWater.AZF.Functions
             _authorizationHelper = authorizationHelper;
         }
 
-        [Function("GetMeasurements")]
-        public async Task<HttpResponseData> GetMeasurements(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "measurements")] HttpRequestData req,
+        [Function("GetFlowRdmw")]
+        public async Task<HttpResponseData> GetFlowRdmw(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "flow/measurements")] HttpRequestData req,
             FunctionContext executionContext)
         {
-            var logger = executionContext.GetLogger("GetMeasurements");
+            var logger = executionContext.GetLogger("GetFlowRdmw");
             logger.LogInformation("Incoming request: {0}", req.Url.AbsoluteUri);
             
             var response = req.CreateResponse(HttpStatusCode.OK);

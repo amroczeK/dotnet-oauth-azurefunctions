@@ -9,7 +9,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using Solution.RuralWater.AZF.Options;
 using Solution.RuralWater.AZF.Helpers;
-using Solution.RuralWater.AZF.Models.CellularDeviceHistory;
+using Solution.RuralWater.AZF.Models.Measurement;
 using Microsoft.Extensions.Options;
 using Solution.RuralWater.AZF.Services;
 using System.Text.Json;
@@ -17,7 +17,7 @@ using Solution.RuralWater.AZF.Models;
 
 namespace Solution.RuralWater.AZF.Functions
 {
-    public class CellularDeviceHistory
+    public class Measurement
     {
         private readonly AuthenticationOptions _authOptions;
         private readonly Secrets _secrets;
@@ -25,7 +25,7 @@ namespace Solution.RuralWater.AZF.Functions
         private readonly AuthenticationHelper _authenticationHelper;
         private readonly AuthorizationHelper _authorizationHelper;
 
-        public CellularDeviceHistory(IOptions<AuthenticationOptions> authOptions, IOptions<Secrets> secrets, IQueryService queryService, AuthenticationHelper authenticationHelper, AuthorizationHelper authorizationHelper)
+        public Measurement(IOptions<AuthenticationOptions> authOptions, IOptions<Secrets> secrets, IQueryService queryService, AuthenticationHelper authenticationHelper, AuthorizationHelper authorizationHelper)
         {
             _authOptions = authOptions?.Value ?? throw new ArgumentException(nameof(authOptions));
             _secrets = secrets?.Value ?? throw new ArgumentException(nameof(secrets));
@@ -34,12 +34,12 @@ namespace Solution.RuralWater.AZF.Functions
             _authorizationHelper = authorizationHelper;
         }
 
-        [Function("GetCdhRdmw")]
-        public async Task<HttpResponseData> GetCdhRdmw(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "devices")] HttpRequestData req,
+        [Function("GetMeasurementRdmw")]
+        public async Task<HttpResponseData> GetMeasurementRdmw(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "measurements")] HttpRequestData req,
             FunctionContext executionContext)
         {
-            var logger = executionContext.GetLogger("GetCdhRdmw");
+            var logger = executionContext.GetLogger("GetMeasurementRdmw");
             logger.LogInformation("Incoming request: {0}", req.Url.AbsoluteUri);
 
             var response = req.CreateResponse(HttpStatusCode.OK);
@@ -47,10 +47,10 @@ namespace Solution.RuralWater.AZF.Functions
             // Parse query parameters
             var queryDictionary = QueryHelpers.ParseQuery(req.Url.Query);
 
-            Devices reqParams = null;
+            Measurements reqParams = null;
             try
             {
-                reqParams = QueryParamHelpers.ConvertDictionaryTo<Devices>(queryDictionary);
+                reqParams = QueryParamHelpers.ConvertDictionaryTo<Measurements>(queryDictionary);
                 reqParams.accountId = _authOptions.AccountId;
             }
             catch (Exception ex)
@@ -74,12 +74,12 @@ namespace Solution.RuralWater.AZF.Functions
             {
                 GraphQLHttpClient client = _queryService.CreateClient(result.AccessToken);
 
-                const string xdsName = Constants.CellularDeviceHistoryXdsName;
+                const string xdsName = Constants.MeasurementXdsName;
                 const string xdsViewName = "rdmw";
                 const string version = "v1";
                 GraphQLRequest request = _queryService.CreateRequest(xdsName, xdsViewName, version, reqParams);
 
-                logger.LogInformation("Querying: {0}\n{1}\nEgress Data Params: {2}", _authOptions.GraphQlUrl, request.Values, JsonSerializer.Serialize<Devices>(reqParams));
+                logger.LogInformation("Querying: {0}\n{1}\nEgress Data Params: {2}", _authOptions.GraphQlUrl, request.Values, JsonSerializer.Serialize<Measurements>(reqParams));
                 var data = await client.SendQueryAsync<QueryResponse<Rdmw>>(request);
 
                 await response.WriteAsJsonAsync(data.Data.EgressData);
