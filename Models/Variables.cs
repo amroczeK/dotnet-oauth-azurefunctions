@@ -8,19 +8,19 @@ namespace Solution.RuralWater.AZF.Models
         /// <summary>
         /// Name of XDS for GraphQL request to Egress APIs.
         /// </summary>
-        public string XdsName { get; set; }
+        public string? XdsName { get; set; }
 
         [JsonPropertyName("viewName")]
         /// <summary>
         /// XDS view name used for GraphQL request to Egress APIs.
         /// </summary>
-        public string ViewName { get; set; }
+        public string? ViewName { get; set; }
 
         [JsonPropertyName("version")]
         /// <summary>
         /// Egress API version.
         /// </summary>
-        public string Version { get; set; }
+        public string? Version { get; set; }
 
         [JsonPropertyName("includeTimeZone")]
         /// <summary>
@@ -32,6 +32,6 @@ namespace Solution.RuralWater.AZF.Models
         /// <summary>
         /// Object of query parameters for the GraphQL request to Egress APIs.
         /// </summary>
-        public dynamic Params { get; set; }
+        public dynamic? Params { get; set; }
     }
 }

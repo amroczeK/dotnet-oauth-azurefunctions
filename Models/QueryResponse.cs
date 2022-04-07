@@ -9,6 +9,6 @@ namespace Solution.RuralWater.AZF.Models
     public class QueryResponse<T>
     {
         [JsonPropertyName("egressData")]
-        public List<T> EgressData { get; set; }
+        public List<T>? EgressData { get; set; }
     }
 }

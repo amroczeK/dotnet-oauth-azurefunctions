@@ -5,15 +5,15 @@ namespace Solution.RuralWater.AZF.Models.CellularDeviceHistory
 {
     public class Devices
     {
-        private string[] _deviceId;
-        private string[] _siteId;
+        private string[]? _deviceId;
+        private string[]? _siteId;
         private int? _limit;
 
         /// <summary>
         /// Customer Account Id
         /// </summary>
         [JsonPropertyName("accountId")]
-        public string accountId { get; set; }
+        public string? accountId { get; set; }
 
         /// <summary>
         /// Timezone. Default value : UTC.
@@ -32,7 +32,7 @@ namespace Solution.RuralWater.AZF.Models.CellularDeviceHistory
         /// </remarks>
         [JsonPropertyName("SiteId")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public dynamic site_id
+        public dynamic? site_id
         {
             get { return _siteId; }
             set { _siteId = QueryParamHelpers.ConvertCommaDelimitedString(value, "site_id", 10); }
@@ -48,7 +48,7 @@ namespace Solution.RuralWater.AZF.Models.CellularDeviceHistory
         /// </remarks>
         [JsonPropertyName("DeviceId")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public dynamic device_id
+        public dynamic? device_id
         {
             get { return _deviceId; }
             set { _deviceId = QueryParamHelpers.ConvertCommaDelimitedString(value, "device_id", 10); }
@@ -66,7 +66,7 @@ namespace Solution.RuralWater.AZF.Models.CellularDeviceHistory
         /// </summary>
         [JsonPropertyName("PerPage")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public dynamic limit
+        public dynamic? limit
         {
             get { return _limit; }
             set { _limit = QueryParamHelpers.ValidateLimit(value, "limit", 1000); }

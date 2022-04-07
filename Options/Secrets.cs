@@ -15,7 +15,7 @@ namespace Solution.RuralWater.AZF.Options
         /// The value is stored in the Azure Key Vault.
         /// </para>
         /// </remarks>
-        public string Password { get; set; }
+        public string? Password { get; set; }
 
         /// <remarks>
         /// The <c>ApiKey</c> is a <see langword="string"/> that is assigned to the 
@@ -24,6 +24,6 @@ namespace Solution.RuralWater.AZF.Options
         /// The value is stored in the Azure Key Vault.
         /// </para>
         /// </remarks>
-        public string ApiKey { get; set; }
+        public string? ApiKey { get; set; }
     }
 }

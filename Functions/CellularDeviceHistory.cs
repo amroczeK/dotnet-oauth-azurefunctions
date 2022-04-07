@@ -48,7 +48,7 @@ namespace Solution.RuralWater.AZF.Functions
             // Parse query parameters
             var queryDictionary = QueryHelpers.ParseQuery(req.Url.Query);
 
-            Devices reqParams = null;
+            Devices? reqParams = null;
             try
             {
                 reqParams = QueryParamHelpers.ConvertDictionaryTo<Devices>(queryDictionary);
@@ -58,7 +58,7 @@ namespace Solution.RuralWater.AZF.Functions
             {
                 _logger.LogError(ex?.InnerException?.Message);
                 response.StatusCode = HttpStatusCode.BadRequest;
-                await response.WriteStringAsync(ex?.InnerException?.Message);
+                await response.WriteStringAsync(ex.InnerException.Message);
                 return response;
             }
 

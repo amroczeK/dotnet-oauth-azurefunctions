@@ -6,15 +6,15 @@ namespace Solution.RuralWater.AZF.Models.Flow
 {
     public class Measurements
     {
-        private string[] _deviceId;
-        private string[] _siteId;
+        private string[]? _deviceId;
+        private string[]? _siteId;
         private int? _limit;
 
         /// <summary>
         /// Customer Account Id
         /// </summary>
         [JsonPropertyName("accountId")]
-        public string accountId { get; set; }
+        public string? accountId { get; set; }
 
         /// <summary>
         /// Timezone. Default value : UTC.
@@ -31,7 +31,7 @@ namespace Solution.RuralWater.AZF.Models.Flow
         /// </remarks>
         [JsonPropertyName("Time_Min")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string start_time { get; set; }
+        public string? start_time { get; set; }
 
         /// <summary>
         /// DateTime string e.g. 2022-03-15T10:15:01.000Z.
@@ -42,7 +42,7 @@ namespace Solution.RuralWater.AZF.Models.Flow
         /// </remarks>
         [JsonPropertyName("Time_Max")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string end_time { get; set; }
+        public string? end_time { get; set; }
 
         /// <summary>
         /// Array of Site Identifiers.
@@ -55,7 +55,7 @@ namespace Solution.RuralWater.AZF.Models.Flow
         /// </remarks>
         [JsonPropertyName("SiteId")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public dynamic site_id
+        public dynamic? site_id
         {
             get { return _siteId; }
             set { _siteId = QueryParamHelpers.ConvertCommaDelimitedString(value, "site_id", 10); }
@@ -71,7 +71,7 @@ namespace Solution.RuralWater.AZF.Models.Flow
         /// </remarks>
         [JsonPropertyName("DeviceId")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public dynamic device_id
+        public dynamic? device_id
         {
             get { return _deviceId; }
             set { _deviceId = QueryParamHelpers.ConvertCommaDelimitedString(value, "device_id", 10); }
@@ -93,7 +93,7 @@ namespace Solution.RuralWater.AZF.Models.Flow
         /// </remarks>
         [JsonPropertyName("PerPage")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public dynamic limit
+        public dynamic? limit
         {
             get { return _limit; }
             set { _limit = QueryParamHelpers.ValidateLimit(value, "limit", 1000); }
