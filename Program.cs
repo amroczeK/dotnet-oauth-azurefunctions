@@ -4,49 +4,40 @@ using Microsoft.Extensions.DependencyInjection;
 using Solution.RuralWater.AZF.Options;
 using Solution.RuralWater.AZF.Services;
 using Solution.RuralWater.AZF.Helpers;
-using Microsoft.Extensions.Options;
 
-namespace Solution.RuralWater.AZF
-{
-    public class Program
+var host = new HostBuilder()
+    .ConfigureFunctionsWorkerDefaults()
+    .ConfigureServices(services =>
     {
-        public static void Main()
+        services.AddOptions<Secrets>().Configure<IConfiguration>((settings, configuration) =>
         {
-            var host = new HostBuilder()
-                .ConfigureFunctionsWorkerDefaults()
-                .ConfigureServices(services =>
+            configuration.GetSection(nameof(Secrets)).Bind(settings);
+        }).Validate(config =>
+        {
+            if (string.IsNullOrEmpty(config.Password) || string.IsNullOrEmpty(config.ApiKey))
+                return false;
+
+            return true;
+        }, "Secrets configuration must not have any null or empty values.");
+        services.AddOptions<AuthenticationOptions>().Configure<IConfiguration>((settings, configuration) =>
+        {
+            configuration.GetSection("AuthOptions").Bind(settings);
+        }).Validate(config =>
+        {
+            var dictionary = QueryParamHelpers.ToDictionary<string>(config);
+            foreach (var item in dictionary)
+            {
+                if (string.IsNullOrEmpty(item.Value))
                 {
-                    services.AddOptions<Secrets>().Configure<IConfiguration>((settings, configuration) =>
-                    {
-                        configuration.GetSection(nameof(Secrets)).Bind(settings);
-                    }).Validate(config =>
-                    {
-                        if (string.IsNullOrEmpty(config.Password) || string.IsNullOrEmpty(config.ApiKey))
-                            return false;
+                    return false;
+                }
+            }
+            return true;
+        }, "Authentication Options configuration must not have any null or empty values.");
+        services.AddScoped<IQueryService, QueryService>();
+        services.AddSingleton<AuthenticationHelper>();
+        services.AddSingleton<AuthorizationHelper>();
+    })
+    .Build();
 
-                        return true;
-                    }, "Secrets configuration must not have any null or empty values.");
-                    services.AddOptions<AuthenticationOptions>().Configure<IConfiguration>((settings, configuration) =>
-                    {
-                        configuration.GetSection("AuthOptions").Bind(settings);
-                    }).Validate(config =>
-                    {
-                        var dictionary = QueryParamHelpers.ToDictionary<string>(config);
-                        foreach(var item in dictionary){
-                            if(string.IsNullOrEmpty(item.Value)){
-                                return false;
-                            }
-                        }
-                        return true;
-                    }, "Authentication Options configuration must not have any null or empty values.");
-                    services.AddScoped<IQueryService, QueryService>();
-                    services.AddSingleton<AuthenticationHelper>();
-                    services.AddSingleton<AuthorizationHelper>();
-                })
-                .Build();
-
-
-            host.Run();
-        }
-    }
-}
+host.Run();
