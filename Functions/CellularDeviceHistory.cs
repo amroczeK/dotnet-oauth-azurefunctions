@@ -24,14 +24,16 @@ namespace Solution.RuralWater.AZF.Functions
         private readonly IQueryService _queryService;
         private readonly AuthenticationHelper _authenticationHelper;
         private readonly AuthorizationHelper _authorizationHelper;
+        private readonly ILogger _logger;
 
-        public CellularDeviceHistory(IOptions<AuthenticationOptions> authOptions, IOptions<Secrets> secrets, IQueryService queryService, AuthenticationHelper authenticationHelper, AuthorizationHelper authorizationHelper)
+        public CellularDeviceHistory(IOptions<AuthenticationOptions> authOptions, IOptions<Secrets> secrets, IQueryService queryService, AuthenticationHelper authenticationHelper, AuthorizationHelper authorizationHelper, ILoggerFactory loggerFactory)
         {
             _authOptions = authOptions?.Value ?? throw new ArgumentException(nameof(authOptions));
             _secrets = secrets?.Value ?? throw new ArgumentException(nameof(secrets));
             _queryService = queryService;
             _authenticationHelper = authenticationHelper;
             _authorizationHelper = authorizationHelper;
+            _logger = loggerFactory.CreateLogger<CellularDeviceHistory>();
         }
 
         [Function("GetCdhRdmw")]
@@ -39,8 +41,7 @@ namespace Solution.RuralWater.AZF.Functions
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "devices")] HttpRequestData req,
             FunctionContext executionContext)
         {
-            var logger = executionContext.GetLogger("GetCdhRdmw");
-            logger.LogInformation("Incoming request: {0}", req.Url.AbsoluteUri);
+            _logger.LogInformation("Incoming request: {0}", req.Url.AbsoluteUri);
 
             var response = req.CreateResponse(HttpStatusCode.OK);
 
@@ -55,14 +56,14 @@ namespace Solution.RuralWater.AZF.Functions
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.InnerException.Message);
+                _logger.LogError(ex?.InnerException?.Message);
                 response.StatusCode = HttpStatusCode.BadRequest;
-                await response.WriteStringAsync(ex.InnerException.Message);
+                await response.WriteStringAsync(ex?.InnerException?.Message);
                 return response;
             }
 
             // Get Bearer token using Password Credentials flow to be able to query GraphQL layer
-            var result = await _authenticationHelper.GetAccessToken(logger);
+            var result = await _authenticationHelper.GetAccessToken(_logger);
 
             if (result.AccessToken == null)
             {
@@ -79,7 +80,7 @@ namespace Solution.RuralWater.AZF.Functions
                 const string version = "v1";
                 GraphQLRequest request = _queryService.CreateRequest(xdsName, xdsViewName, version, reqParams);
 
-                logger.LogInformation("Querying: {0}\n{1}\nEgress Data Params: {2}", _authOptions.GraphQlUrl, request.Values, JsonSerializer.Serialize<Devices>(reqParams));
+                _logger.LogInformation("Querying: {0}\n{1}\nEgress Data Params: {2}", _authOptions.GraphQlUrl, request.Values, JsonSerializer.Serialize<Devices>(reqParams));
                 var data = await client.SendQueryAsync<QueryResponse<Rdmw>>(request);
 
                 await response.WriteAsJsonAsync(data.Data.EgressData);
@@ -87,7 +88,7 @@ namespace Solution.RuralWater.AZF.Functions
             }
             catch (Exception ex)
             {
-                logger.LogError("Error occurred querying GraphQL: {error}", ex.Message);
+                _logger.LogError("Error occurred querying GraphQL: {error}", ex.Message);
                 response.StatusCode = HttpStatusCode.InternalServerError;
                 return response;
             }
