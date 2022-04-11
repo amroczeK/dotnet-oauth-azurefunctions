@@ -21,7 +21,7 @@ namespace Solution.RuralWater.AZF.Helpers
         /// Serialize object to json string then deserialize to dictionary of specified type.
         /// </summary>
         /// <returns>Dictionary of type</returns>
-        public static Dictionary<string, TValue> ToDictionary<TValue>(object obj)
+        public static Dictionary<string, TValue>? ToDictionary<TValue>(object obj)
         {
             var json = JsonSerializer.Serialize(obj);
             var dictionary = JsonSerializer.Deserialize<Dictionary<string, TValue>>(json);
@@ -95,7 +95,7 @@ namespace Solution.RuralWater.AZF.Helpers
         /// Convert object to dictionary.
         /// </summary>
         /// <returns>Dictionary string object</returns>
-        public static Dictionary<string, object> ConvertObjectToDictionary(object arg)
+        public static Dictionary<string, object?> ConvertObjectToDictionary(object arg)
         {
             return arg.GetType().GetProperties().ToDictionary(property => property.Name, property => property.GetValue(arg));
         }

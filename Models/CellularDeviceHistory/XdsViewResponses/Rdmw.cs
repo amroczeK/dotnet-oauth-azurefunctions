@@ -15,19 +15,19 @@ namespace Solution.RuralWater.AZF.Models.CellularDeviceHistory
         public int DataSourceId { get; set; }
 
         [JsonPropertyName("device_id")]
-        public string DeviceId { get; set; }
+        public string? DeviceId { get; set; }
 
         [JsonPropertyName("site_id")]
-        public string SiteId { get; set; }
+        public string? SiteId { get; set; }
 
         [JsonPropertyName("serial_number")]
-        public string SerialNumber { get; set; }
+        public string? SerialNumber { get; set; }
 
         [JsonPropertyName("ts")]
-        public string Ts { get; set; }
+        public string? Ts { get; set; }
 
         [JsonPropertyName("last_updated")]
-        public string LastUpdated { get; set; }
+        public string? LastUpdated { get; set; }
 
         /// <summary>
         /// Latitude property
@@ -92,12 +92,12 @@ namespace Solution.RuralWater.AZF.Models.CellularDeviceHistory
         public double? Accuracy { get; set; }
 
         [JsonPropertyName("iccid")]
-        public string IccId { get; set; }
+        public string? IccId { get; set; }
 
         [JsonPropertyName("imsi")]
-        public string Imsi { get; set; }
+        public string? Imsi { get; set; }
 
         [JsonPropertyName("imei")]
-        public string Imei { get; set; }
+        public string? Imei { get; set; }
     }
 }
